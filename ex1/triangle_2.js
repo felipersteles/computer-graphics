@@ -3,10 +3,24 @@ var points;
 var fColor
 var fvColor
 
+var editVertices = [
+    vec2( 0, 1 ),
+    vec2(  0.5,  0 ),
+    vec2(  -0.5, 0 ),]
+var colors = [
+    vec3(  1,  1, 0),
+    vec3( 0, 1, 1),
+    vec3( 1, 0, 1),
+]
+
 window.onload = function init(){
     var canvas = document.getElementById( "gl-canvas" );
+    var canvasEdit = document.getElementById( "gl-canvas-edit" );
+
      gl = WebGLUtils.setupWebGL( canvas );    
-     if ( !gl ) { alert( "WebGL isn't available" ); }       
+     glEdit = WebGLUtils.setupWebGL( canvasEdit );    
+     if ( !gl ) { alert( "WebGL isn't available" ); }  
+     if ( !glEdit ) { alert( "WebGL to edit isn't available" ); }       
     // Three Vertices
     var vertices = [
             vec2( 0, 1 ),
@@ -31,11 +45,11 @@ window.onload = function init(){
         vec3(  0,  1, 1),
         vec3(  1,  0, 1),
         vec3( 1, 0, 1),
-        vec3(  0,  1, 1),
-        vec3(  1,  0, 1),
+        vec3(  0,  1, 0),
+        vec3(  1,  1, 0),
         vec3( 1, 0, 1),
-        vec3(  0,  1, 1),
-        vec3(  0,  1, 1),
+        vec3(  1,  0, 0),
+        vec3(  0,  0, 1),
     ];    
 
 
@@ -75,3 +89,4 @@ function render() {
    gl.drawArrays( gl.TRIANGLES, 0, 12 );
    
 }
+
