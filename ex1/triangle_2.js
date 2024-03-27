@@ -9,27 +9,33 @@ window.onload = function init(){
      if ( !gl ) { alert( "WebGL isn't available" ); }       
     // Three Vertices
     var vertices = [
-            vec2( -1, 1 ),
-            vec2(  1,  1 ),
-            vec2(  0, 0 ),
-            vec2( -1, -1 ),
-            vec2(  1,  -1 ),
-            vec2(  0, 0 ),
-            vec2( 1, 1 ),
-            vec2(  1,  -1 ),
-            vec2(  0, 0 ),
+            vec2( 0, 1 ),
+            vec2(  0.5,  0 ),
+            vec2(  -0.5, 0 ),
+            vec2(  0, -1 ),
+            vec2( 0.5, 0 ),
+            vec2(  -0.5,  0 ),
+            vec2( 0, -0.5 ),
+            vec2(  0,  0.5 ),
+            vec2(  1, 0 ),
+            vec2( 0, -0.5 ),
+            vec2(  0,  0.5 ),
+            vec2(  -1, 0 ),
     ]; 
 
     var colors = [
-        vec3( 1, 0, 0),
-        vec3(  0,  1, 0),
-        vec3(  0,  0, 1),
-        vec3( 1, 1, 0),
-        vec3(  1,  1, 0),
+        vec3(  0,  1, 1),
+        vec3( 1, 0, 1),
+        vec3( 1, 0, 1),
+        vec3( 1, 0, 1),
+        vec3(  0,  1, 1),
         vec3(  1,  0, 1),
         vec3( 1, 0, 1),
         vec3(  0,  1, 1),
         vec3(  1,  0, 1),
+        vec3( 1, 0, 1),
+        vec3(  0,  1, 1),
+        vec3(  0,  1, 1),
     ];    
 
 
@@ -66,6 +72,6 @@ function render() {
    gl.clear( gl.COLOR_BUFFER_BIT ); 
    // inicia no indice 0 e vai até o indice 6
    // desenha a quantidade de pontos no formato do triangulo
-   gl.drawArrays( gl.TRIANGLES, 0, 9 );
+   gl.drawArrays( gl.TRIANGLES, 0, 12 );
    
 }
