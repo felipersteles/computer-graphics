@@ -6,7 +6,8 @@ var fvColor
 var editVertices = [
     vec2( 0, 1 ),
     vec2(  0.5,  0 ),
-    vec2(  -0.5, 0 ),]
+    vec2(  -0.5, 0 ),
+]
 var colors = [
     vec3(  1,  1, 0),
     vec3( 0, 1, 1),
@@ -55,7 +56,9 @@ window.onload = function init(){
 
     //  Configure WebGL   
     gl.viewport( 0, 0, canvas.width, canvas.height );
+    glEdit.viewport( 0, 0, canvas.width, canvas.height );
     gl.clearColor( 0, 0, 0, 1.0 );  
+    glEdit.clearColor( 0, 0, 0, 1.0 );  
 
     //  Load shaders and initialize attribute buffers
     var program = initShaders( gl, "vertex-shader", "fragment-shader" );
