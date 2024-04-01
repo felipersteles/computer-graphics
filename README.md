@@ -3,10 +3,10 @@ Using WebGL to learn about graphics computing.
 
 ## Conceitos básicos
 
-### Arestas
+### Vertices
 São os pontos.
 
-### Vertices
+### Arestas
 São as ligações entre os pontos.
 
 ### Faces
