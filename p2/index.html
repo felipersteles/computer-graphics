@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<style>
+    .menu {
+        width: 512px;
+        display: flex;
+        align-items: center;
+    }
+
+    .buttons {
+        display: flex;
+        margin-left: auto;
+        margin-right: auto;
+        justify-content: center;
+    }
+
+    .buttons button {
+        margin: 10px;
+    }
+</style>
+
+<html>
+<meta charset=UTF-8>
+<script id="vertex-shader" type="x-shader/x-vertex">
+attribute vec4 vPosition;
+attribute vec4 vColor;
+
+varying vec4 fColor;
+
+void main()
+{
+    gl_Position = vPosition;
+    gl_PointSize = 10.0;
+    fColor = vColor;
+}
+</script>
+
+<script id="fragment-shader" type="x-shader/x-fragment">
+
+precision mediump float;
+
+varying vec4 fColor;
+void main()
+{
+    gl_FragColor = fColor;
+}
+</script>
+
+<script type="text/javascript" src="../Common/webgl-utils.js"></script>
+<script type="text/javascript" src="../Common/initShaders.js"></script>
+<script type="text/javascript" src="../Common/MV.js"></script>
+<script type="text/javascript" src="script.js"></script>
+
+<body>
+    <div id="msg" style="display: none;"></div>
+    <div style="display: flex; gap: 15px;">
+        <div>
+            <canvas style="border: 1px solid blue; width: fit-content; height: fit-content;" id="gl-canvas" width="512"
+                height="512">
+                Oops ... your browser doesn't support the HTML5 canvas element
+            </canvas>
+        </div>
+        <div>
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+                <button id="point">Point</button>
+                <button id="line">Line</button>
+                <button id="polygon">Polygon</button>
+            </div>
+            <div>
+                <select id="mymenu" size="7">
+                    <option value="0">Black</option>
+                    <option value="1">Red</option>
+                    <option value="2">Yellow</option>
+                    <option value="3">Green</option>
+                    <option value="4">Blue</option>
+                    <option value="5">Magenta</option>
+                    <option value="6">Cyan</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="menu">
+
+
+        <div class="buttons">
+
+            <button type="button" id="new">New Object</button>
+            <button type="button" id="del">Delete Object</button>
+            <button type="button" id="move">Move</button>
+            <button type="button" id="rot">Rotate</button>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>
