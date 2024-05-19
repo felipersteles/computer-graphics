@@ -51,10 +51,9 @@ void main()
 <script type="text/javascript" src="script.js"></script>
 
 <body>
-    <div id="msg" style="display: none;"></div>
     <div style="display: flex; gap: 15px;">
         <div>
-            <canvas style="border: 1px solid blue; width: fit-content; height: fit-content;" id="gl-canvas" width="512"
+            <canvas style="border: 1px solid gray; width: fit-content; height: fit-content;" id="gl-canvas" width="512"
                 height="512">
                 Oops ... your browser doesn't support the HTML5 canvas element
             </canvas>
@@ -79,13 +78,19 @@ void main()
         </div>
     </div>
 
-    <div class="menu">
+    <div class="menu" style="display: flex; flex-direction: column;">
 
+        <div style="display: flex; align-items: center;gap: 15px;">
+            <h1>Drawing:</h1>
+            <div>
+                <h3 id="object">points</h3>
+            </div>
+        </div>
 
         <div class="buttons">
 
-            <button type="button" id="new">New Object</button>
-            <button type="button" id="del">Delete Object</button>
+            <button type="button" id="draw">Draw</button>
+            <button type="button" id="clear">Clear</button>
             <button type="button" id="move">Move</button>
             <button type="button" id="rot">Rotate</button>
 
