@@ -35,8 +35,9 @@ var cIndex = 0;
 //              Select a object
 // ----------------------------------------------------------------
 
-var selectedObj;
+var selectedObj = -1;
 var isSelected = false;
+var isRotating = false;
 
 // ----------------------------------------------------------------
 //            Select Draw Mode
@@ -87,7 +88,7 @@ var linesIndex = 0;
 //            DRAW POLYGONS
 // ----------------------------------------------------------------
 var polygons = [];
-var polygonsColors =[];
+var polygonsColors = [];
 var polygonsIndex = 0;
 var first = true;
 var v1, v2, v3, v4;
@@ -155,6 +156,7 @@ window.onload = function init() {
     const drawButton = document.getElementById("draw");
     const clearButton = document.getElementById("clear");
     const moveButton = document.getElementById("move");
+    const rotateButton = document.getElementById("rotate");
 
     // select color
     colorMenu.addEventListener("click", function () {
@@ -176,10 +178,14 @@ window.onload = function init() {
 
         // console.log("x: " + x + ", y: " + y);
 
-        console.log(selectedAction)
+        console.log(`Selected action: `, selectedAction)
         switch (selectedAction) {
             case actions.MOVE:
                 move(pos, vBuffer, cBuffer);
+                break;
+
+            case actions.ROTATE:
+                rotate(pos, vBuffer, cBuffer);
                 break;
 
             default:
@@ -197,6 +203,10 @@ window.onload = function init() {
     }
     moveButton.onclick = () => {
         selectedAction = actions.MOVE;
+    }
+    rotateButton.onclick = () => {
+        unhighlightObj(selectedObj)
+        selectedAction = actions.ROTATE;
     }
 
     render()
@@ -310,20 +320,12 @@ function move(pos, vBuffer, cBuffer) {
     const x = pos[0];
     const y = pos[1];
 
-    console.log("position x = " + pos[0] + ", position y = " + pos[1]);
-
     if (!isSelected) {
-
         selectedObj = getSelected(x, y);
         console.log("selected object index: " + selectedObj);
-
     }
-    else {
-
+    else
         moveObj(selectedObj, x, y, vBuffer, cBuffer);
-
-    }
-
 }
 
 function moveObj(selObj, x, y, vBuffer, cBuffer) {
@@ -398,12 +400,160 @@ function moveObj(selObj, x, y, vBuffer, cBuffer) {
 
 function updateEdges(selObj, a, b, c, d) {
 
+    // update edges of polygons after move it
     polygons[selObj] = [[a, c],
     [a, d],
     [b, c],
     [b, d]];
 
 }
+
+
+// ----------------------------------------------------------------
+//          Rotate objects
+// ----------------------------------------------------------------
+function rotate(pos, vBuffer, cBuffer) {
+    console.log('rotate');
+
+    const x = pos[0];
+    const y = pos[1];
+
+    if (!isSelected) {
+        selectedObj = getSelected(x, y);
+        console.log("selected object index: " + selectedObj);
+
+        if (selectedObj > -1) isRotating = true;
+    }
+    else
+        rotateObj(vBuffer, cBuffer);
+}
+
+function rotateObj(vBuffer, cBuffer) {
+
+
+    var theta = 0;
+    var angle, cos, sin;
+    var selIndexStart = 4 * selectedObj;
+    var b = document.getElementById('infoAngle')
+
+    canvas.addEventListener("wheel", (e) => {
+
+        if (!isRotating || selectedObj < 0) return;
+
+        if (e.deltaY > 0) {
+            theta = (theta + 10) % 360;
+        } else {
+            theta = (theta - 10) % 360;
+        }
+
+        b.innerText = theta
+        // b.style.display = "block";
+
+        // calculate angle in radians
+        angle = theta * (Math.PI / 180);
+        // console.log(angle)
+        cos = Math.cos(angle);
+        sin = Math.sin(angle);
+
+        // new center is 0, old center is selected center
+        var newX = 0, newY = 0;
+        var oldX = 0, oldY = 0;
+        var deltaX = 0, deltaY = 0;
+
+        // get original vertices
+        var t1 = polygons[selectedObj][0][0];
+        var t2 = polygons[selectedObj][2][0];
+        var t3 = polygons[selectedObj][0][1];
+        var t4 = polygons[selectedObj][1][1];
+
+        // calculate current center
+        oldX = (t1[0] + t2[0]) / 2;
+        oldY = (t1[1] + t2[1]) / 2;
+
+        // calculate delta from old position to center
+        deltaX = newX - oldX;
+        deltaY = newY - oldY;
+
+        // calculate new vertices positions
+        t1[0] = t1[0] + deltaX;
+        t1[1] = t1[1] + deltaY;
+
+        t2[0] = t2[0] + deltaX;
+        t2[1] = t2[1] + deltaY;
+
+        t3[0] = t3[0] + deltaX;
+        t3[1] = t3[1] + deltaY;
+
+        t4[0] = t4[0] + deltaX;
+        t4[1] = t4[1] + deltaY;
+
+        // object is centered, now rotate  
+        var rotation = mat2(vec2(cos, sin),
+            vec2(-sin, cos));
+
+        var resultT1 = (mult(mat2(t1[0], t1[1]), rotation));
+        var resultT2 = (mult(mat2(t2[0], t2[1]), rotation));
+        var resultT3 = (mult(mat2(t3[0], t3[1]), rotation));
+        var resultT4 = (mult(mat2(t4[0], t4[1]), rotation));
+
+        // update vertices with result
+        t1 = resultT1[0];
+        t2 = resultT2[0];
+        t3 = resultT3[0];
+        t4 = resultT4[0];
+
+        // object is rotated, now move back
+        // new center is now going to be old center
+        newX = oldX, newY = oldY;
+        oldX = 0, oldY = 0;
+
+        // // calculate delta again
+        deltaX = newX - oldX;
+        deltaY = newY - oldY;
+
+        // calculate rotated vertices positions
+        t1[0] = t1[0] + deltaX;
+        t1[1] = t1[1] + deltaY;
+
+        t2[0] = t2[0] + deltaX;
+        t2[1] = t2[1] + deltaY;
+
+        t3[0] = t3[0] + deltaX;
+        t3[1] = t3[1] + deltaY;
+
+        t4[0] = t4[0] + deltaX;
+        t4[1] = t4[1] + deltaY;
+
+        // now, update final position and convert to canvas
+        updateEdges(selectedObj, t1, t2, t3, t4);
+
+        // update buffer
+        gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
+
+        gl.bufferSubData(gl.ARRAY_BUFFER, 8 * selIndexStart, flatten(t1));
+        gl.bufferSubData(gl.ARRAY_BUFFER, 8 * (selIndexStart + 1), flatten(t3));
+        gl.bufferSubData(gl.ARRAY_BUFFER, 8 * (selIndexStart + 2), flatten(t2));
+        gl.bufferSubData(gl.ARRAY_BUFFER, 8 * (selIndexStart + 3), flatten(t4));
+
+    })
+
+    document.addEventListener("keypress", function (e) {
+        if (e.key == 'Enter') {
+            theta = 0;
+            b.style.display = "none";
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
+            unhighlightObj(selectedObj);
+
+            isRotating = false;
+            canvas.removeEventListener("wheel", (e)=> console.log(`Fim da rotação`))
+        }
+    })
+}
+
+// ----------------------------------------------------------------
+//          Select objects
+// ----------------------------------------------------------------
 
 // returns whether an object has been selected.
 function getSelected(clickX, clickY) {
@@ -507,25 +657,22 @@ function highlightObj(selObj) {
 // unhighlights selected object back to original color.
 function unhighlightObj(selObj) {
 
-    var selColorIndex;
+    if (!isSelected) return;
 
-    if (isSelected) {
+    const selIndex = 4 + 4 * selObj;
 
-        selIndex = 4 + 4 * selObj;
+    // get index of color of selected object
+    const polygonColor = polygonsColors[selObj];
 
-        // get index of color of selected object
-        selColorIndex = colorArray[selObj];
+    gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndex - 4), flatten(polygonColor));
+    gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndex - 3), flatten(polygonColor));
+    gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndex - 2), flatten(polygonColor));
+    gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndex - 1), flatten(polygonColor));
 
-        // use same color to highlight selected object
-        t = vec4(colors[selColorIndex]);
 
-        gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndex - 4), flatten(t));
-        gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndex - 3), flatten(t));
-        gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndex - 2), flatten(t));
-        gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndex - 1), flatten(t));
-
-    }
-
+    // libera o objeto selecionado
+    selectedObj = -1;
+    isSelected = false;
 }
 
 function render() {
