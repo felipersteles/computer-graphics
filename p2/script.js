@@ -124,35 +124,61 @@ window.onload = function init() {
     gl.clearColor(0.8, 0.8, 0.8, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
+
     // ----------------------------------------------------------------
     //  Load shaders and initialize attribute buffers
-    //       -> General
+    //       -> Separate Shaders
     // ----------------------------------------------------------------
-    var program = initShaders(gl, "vertex-shader", "fragment-shader");
-    gl.useProgram(program);
 
-    var vBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
+    pointProgram = initShaders(gl, "point-vertex-shader", "fragment-shader");
+    lineProgram = initShaders(gl, "line-vertex-shader", "fragment-shader");
+    polygonProgram = initShaders(gl, "polygon-vertex-shader", "fragment-shader");
+
+    // ----------------------------------------------------------------
+    //  Load shaders and initialize attribute buffers
+    //       -> Points
+    // ----------------------------------------------------------------
+
+    pointBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, pointBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, 8 * maxNumVertices, gl.STATIC_DRAW);
 
-    var vPosition = gl.getAttribLocation(program, "vPosition");
-    gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(vPosition);
-
-    var cBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
+    pointColorBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, pointColorBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, 16 * maxNumVertices, gl.STATIC_DRAW);
 
-    var vColor = gl.getAttribLocation(program, "vColor");
-    gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(vColor);
+    // ----------------------------------------------------------------
+    //  Load shaders and initialize attribute buffers
+    //       -> Line
+    // ----------------------------------------------------------------
 
+    lineBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, lineBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, 8 * maxNumVertices, gl.STATIC_DRAW);
+
+    lineColorBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, lineColorBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, 16 * maxNumVertices, gl.STATIC_DRAW);
+
+    // ----------------------------------------------------------------
+    //  Load shaders and initialize attribute buffers
+    //       -> Polygon
+    // ----------------------------------------------------------------
+
+    polygonBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, polygonBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, 8 * maxNumVertices, gl.STATIC_DRAW);
+
+    polygonColorBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, polygonColorBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, 16 * maxNumVertices, gl.STATIC_DRAW);
 
     // UX / UI elements
     const pointsButton = document.getElementById("point");
     const linesButton = document.getElementById("line");
     const polygonButton = document.getElementById("polygon");
     const colorMenu = document.getElementById("mymenu");
+
     const drawButton = document.getElementById("draw");
     const clearButton = document.getElementById("clear");
     const moveButton = document.getElementById("move");
@@ -181,15 +207,15 @@ window.onload = function init() {
         console.log(`Selected action: `, selectedAction)
         switch (selectedAction) {
             case actions.MOVE:
-                move(pos, vBuffer, cBuffer);
+                move(pos);
                 break;
 
             case actions.ROTATE:
-                rotate(pos, vBuffer, cBuffer);
+                rotate(pos);
                 break;
 
             default:
-                draw(pos, vBuffer, cBuffer);
+                draw(pos);
                 break;
         }
     });
@@ -202,9 +228,19 @@ window.onload = function init() {
         selectedAction = actions.CLEAR;
     }
     moveButton.onclick = () => {
+        if (selectedDrawMode != drawMode.POLYGONS) {
+            alert('You must select a polygon.');
+            return;
+        }
+
         selectedAction = actions.MOVE;
     }
     rotateButton.onclick = () => {
+        if (selectedDrawMode != drawMode.POLYGONS) {
+            alert('You must select a polygon.');
+            return;
+        }
+
         unhighlightObj(selectedObj)
         selectedAction = actions.ROTATE;
     }
@@ -233,50 +269,49 @@ function clear() {
 // ----------------------------------------------------------------
 //          Draw objects
 // ----------------------------------------------------------------
-function draw(pos, vBuffer, cBuffer) {
+function draw(pos) {
     switch (selectedDrawMode) {
         case drawMode.LINES:
-            addLine(pos, vBuffer, cBuffer)
+            addLine(pos, lineBuffer, lineColorBuffer)
             break
         case drawMode.POLYGONS:
-            addPolygon(pos, vBuffer, cBuffer)
+            addPolygon(pos, polygonBuffer, polygonColorBuffer)
             break
         default:
-            addPoint(pos, vBuffer, cBuffer)
+            addPoint(pos)
             break;
     }
 }
 
-function addPoint(pos, vBuffer, cBuffer) {
+function addPoint(pos) {
 
     points.push(pos);
 
     var i = pointsIndex;
-    gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
+    gl.bindBuffer(gl.ARRAY_BUFFER, pointBuffer);
     gl.bufferSubData(gl.ARRAY_BUFFER, 8 * i, flatten(pos));
-    gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
+    gl.bindBuffer(gl.ARRAY_BUFFER, pointColorBuffer);
     gl.bufferSubData(gl.ARRAY_BUFFER, 16 * i, flatten(colors[cIndex]));
     pointsIndex++;
 }
 
-function addLine(pos, vBuffer, cBuffer) {
+function addLine(pos) {
 
     lines.push(pos);
 
     var i = linesIndex;
-    gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
+    gl.bindBuffer(gl.ARRAY_BUFFER, lineBuffer);
     gl.bufferSubData(gl.ARRAY_BUFFER, 8 * i, flatten(pos));
-    gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
+    gl.bindBuffer(gl.ARRAY_BUFFER, lineColorBuffer);
     gl.bufferSubData(gl.ARRAY_BUFFER, 16 * i, flatten(colors[cIndex]));
     linesIndex++;
 }
 
-function addPolygon(pos, vBuffer, cBuffer) {
+function addPolygon(pos) {
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer)
+    gl.bindBuffer(gl.ARRAY_BUFFER, polygonBuffer)
     if (first) {
         first = false;
-        gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer)
         v1 = pos;
     }
     else {
@@ -300,7 +335,7 @@ function addPolygon(pos, vBuffer, cBuffer) {
         gl.bufferSubData(gl.ARRAY_BUFFER, 8 * (polygonsIndex + 2), flatten(v2));
         gl.bufferSubData(gl.ARRAY_BUFFER, 8 * (polygonsIndex + 3), flatten(v4));
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
+        gl.bindBuffer(gl.ARRAY_BUFFER, polygonColorBuffer);
         polygonsIndex += 4;
 
         gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (polygonsIndex - 4), flatten(polygonColor));
@@ -314,7 +349,7 @@ function addPolygon(pos, vBuffer, cBuffer) {
 // ----------------------------------------------------------------
 //          Move objects
 // ----------------------------------------------------------------
-function move(pos, vBuffer, cBuffer) {
+function move(pos) {
     console.log('move');
 
     const x = pos[0];
@@ -325,7 +360,7 @@ function move(pos, vBuffer, cBuffer) {
         console.log("selected object index: " + selectedObj);
     }
     else
-        moveObj(selectedObj, x, y, vBuffer, cBuffer);
+        moveObj(selectedObj, x, y, polygonBuffer, polygonColorBuffer);
 }
 
 function moveObj(selObj, x, y, vBuffer, cBuffer) {
@@ -412,33 +447,32 @@ function updateEdges(selObj, a, b, c, d) {
 // ----------------------------------------------------------------
 //          Rotate objects
 // ----------------------------------------------------------------
-function rotate(pos, vBuffer, cBuffer) {
-    console.log('rotate');
+function rotate(pos) {
 
     const x = pos[0];
     const y = pos[1];
 
     if (!isSelected) {
-        selectedObj = getSelected(x, y);
-        console.log("selected object index: " + selectedObj);
+        obj = getSelected(x, y);
+        console.log("selected object index: " + obj);
 
-        if (selectedObj > -1) isRotating = true;
+        if (obj > -1) isRotating = true;
     }
     else
-        rotateObj(vBuffer, cBuffer);
+        rotateObj(obj, polygonBuffer, polygonColorBuffer);
 }
 
-function rotateObj(vBuffer, cBuffer) {
+function rotateObj(obj, vBuffer, cBuffer) {
 
 
     var theta = 0;
     var angle, cos, sin;
-    var selIndexStart = 4 * selectedObj;
+    var selIndexStart = 4 * obj;
     var b = document.getElementById('infoAngle')
 
     canvas.addEventListener("wheel", (e) => {
 
-        if (!isRotating || selectedObj < 0) return;
+        if (!isRotating) return;
 
         if (e.deltaY > 0) {
             theta = (theta + 10) % 360;
@@ -461,10 +495,10 @@ function rotateObj(vBuffer, cBuffer) {
         var deltaX = 0, deltaY = 0;
 
         // get original vertices
-        var t1 = polygons[selectedObj][0][0];
-        var t2 = polygons[selectedObj][2][0];
-        var t3 = polygons[selectedObj][0][1];
-        var t4 = polygons[selectedObj][1][1];
+        var t1 = polygons[obj][0][0];
+        var t2 = polygons[obj][2][0];
+        var t3 = polygons[obj][0][1];
+        var t4 = polygons[obj][1][1];
 
         // calculate current center
         oldX = (t1[0] + t2[0]) / 2;
@@ -525,7 +559,7 @@ function rotateObj(vBuffer, cBuffer) {
         t4[1] = t4[1] + deltaY;
 
         // now, update final position and convert to canvas
-        updateEdges(selectedObj, t1, t2, t3, t4);
+        updateEdges(obj, t1, t2, t3, t4);
 
         // update buffer
         gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
@@ -543,10 +577,10 @@ function rotateObj(vBuffer, cBuffer) {
             b.style.display = "none";
 
             gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
-            unhighlightObj(selectedObj);
+            unhighlightObj(obj);
 
             isRotating = false;
-            canvas.removeEventListener("wheel", (e)=> console.log(`Fim da rotação`))
+            canvas.removeEventListener("wheel", (e) => console.log(`Fim da rotação`))
         }
     })
 }
@@ -558,25 +592,21 @@ function rotateObj(vBuffer, cBuffer) {
 // returns whether an object has been selected.
 function getSelected(clickX, clickY) {
 
-    var colNum = polygons.length; //number of columns
-    var pickReturn;
     var pickedIndex;
 
-    console.log('columns', colNum)
-    for (let i = colNum - 1; i >= 0; i--) {
+    for (let i = polygons.length - 1; i >= 0; i--) {
 
-        pickReturn = pickArea(i, clickX, clickY);
+        const pickReturn = pickArea(i, clickX, clickY);
 
-        if (pickReturn == 1) {
-
+        if (pickReturn) {
             isSelected = true;
             pickedIndex = i;
             highlightObj(i);
 
             return pickedIndex;
-
         }
     }
+
     isSelected = false;
     return null;
 }
@@ -625,9 +655,7 @@ function pickArea(currentId, x, y) {
         }
     }
 
-    console.log(`points`, p1, p2)
-
-    return ni % 2;
+    return ni % 2 === 1;
 }
 
 // highlights selected object with a lighter color.
@@ -676,19 +704,49 @@ function unhighlightObj(selObj) {
 }
 
 function render() {
-    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.clear(gl.COLOR_BUFFER_BI | gl.DEPTH_BUFFER_BIT);
 
     switch (selectedDrawMode) {
         case drawMode.LINES:
             // Draw lines
+            gl.useProgram(lineProgram);
+            gl.bindBuffer(gl.ARRAY_BUFFER, lineBuffer);
+            var vPosition = gl.getAttribLocation(lineProgram, "vPosition");
+            gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
+            gl.enableVertexAttribArray(vPosition);
+            gl.bindBuffer(gl.ARRAY_BUFFER, lineColorBuffer);
+            var vColor = gl.getAttribLocation(lineProgram, "vColor");
+            gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
+            gl.enableVertexAttribArray(vColor);
             gl.drawArrays(gl.LINES, 0, linesIndex);
             break
         case drawMode.POLYGONS:
             // Draw polygons
-            for (var i = 0; i < polygonsIndex; i += 4) gl.drawArrays(gl.TRIANGLE_FAN, i, 4);
+            gl.useProgram(polygonProgram);
+            gl.bindBuffer(gl.ARRAY_BUFFER, polygonBuffer);
+            var vPosition = gl.getAttribLocation(polygonProgram, "vPosition");
+            gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
+            gl.enableVertexAttribArray(vPosition);
+            gl.bindBuffer(gl.ARRAY_BUFFER, polygonColorBuffer);
+            var vColor = gl.getAttribLocation(polygonProgram, "vColor");
+            gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
+            gl.enableVertexAttribArray(vColor);
+            for (var i = 0; i < polygonsIndex; i += 4) {
+                gl.drawArrays(gl.TRIANGLE_FAN, i, 4);
+            }
             break
         default:
             // Draw points
+            gl.useProgram(pointProgram);
+            gl.bindBuffer(gl.ARRAY_BUFFER, pointBuffer);
+            var vPosition = gl.getAttribLocation(pointProgram, "vPosition");
+            gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
+            gl.enableVertexAttribArray(vPosition);
+            gl.bindBuffer(gl.ARRAY_BUFFER, pointColorBuffer);
+            var vColor = gl.getAttribLocation(pointProgram, "vColor");
+            gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
+            gl.enableVertexAttribArray(vColor);
+            gl.drawArrays(gl.POINTS, 0, pointsIndex);
             gl.drawArrays(gl.POINTS, 0, pointsIndex);
             break;
     }

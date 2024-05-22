@@ -34,6 +34,37 @@ void main()
 }
 </script>
 
+<script id="point-vertex-shader" type="x-shader/x-vertex">
+    attribute vec4 vPosition;
+    attribute vec4 vColor;
+    varying vec4 fColor;
+    void main() {
+        gl_Position = vPosition;
+        fColor = vColor;
+        gl_PointSize = 7.0;
+    }
+    </script>
+
+<script id="line-vertex-shader" type="x-shader/x-vertex">
+    attribute vec4 vPosition;
+    attribute vec4 vColor;
+    varying vec4 fColor;
+    void main() {
+        gl_Position = vPosition;
+        fColor = vColor;
+    }
+    </script>
+
+<script id="polygon-vertex-shader" type="x-shader/x-vertex">
+    attribute vec4 vPosition;
+    attribute vec4 vColor;
+    varying vec4 fColor;
+    void main() {
+        gl_Position = vPosition;
+        fColor = vColor;
+    }
+    </script>
+
 <script id="fragment-shader" type="x-shader/x-fragment">
 
 precision mediump float;
@@ -89,6 +120,10 @@ void main()
                 <h3 id="object">points</h3>
             </div>
         </div>
+
+        <div>
+            <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
+          </div>
 
         <div class="buttons">
 
