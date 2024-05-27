@@ -55,7 +55,7 @@ void main()
     }
     </script>
 
-    <script id="triangle-vertex-shader" type="x-shader/x-vertex">
+<script id="triangle-vertex-shader" type="x-shader/x-vertex">
         attribute vec4 vPosition;
         attribute vec4 vColor;
         varying vec4 fColor;
@@ -65,7 +65,7 @@ void main()
         }
     </script>
 
-    <script id="polygon-vertex-shader" type="x-shader/x-vertex">
+<script id="polygon-vertex-shader" type="x-shader/x-vertex">
         attribute vec4 vPosition;
         attribute vec4 vColor;
         varying vec4 fColor;
@@ -75,7 +75,7 @@ void main()
         }
     </script>
 
-    <script id="fragment-shader" type="x-shader/x-fragment">
+<script id="fragment-shader" type="x-shader/x-fragment">
 
     precision mediump float;
 
@@ -100,14 +100,14 @@ void main()
             </canvas>
         </div>
         <div>
-            <div style="display: flex; flex-direction: column; gap: 6px;">
+            <div style="display: flex;width: 100px; flex-direction: column; gap: 6px;">
                 <button id="point">Point</button>
                 <button id="line">Line</button>
                 <button id="triangles">Triangle</button>
                 <button id="polygon">Square</button>
             </div>
             <div>
-                <select style="margin-top: 10px;" id="mymenu" size="7">
+                <select style="margin-top: 10px;" id="color-menu" size="7">
                     <option value="0">Black</option>
                     <option value="1">Red</option>
                     <option value="2">Yellow</option>
@@ -117,8 +117,11 @@ void main()
                     <option value="6">Cyan</option>
                 </select>
             </div>
-            <div>
-                <span id="infoAngle"></span>
+            <div id="rotate-menu" style="margin-top: 10px; display: none; max-width: 50px;">
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                    <span id="infoAngle"></span>
+                    <input style="border: 1px solid blue;" id="sense" type="number" />
+                </div>
             </div>
         </div>
     </div>

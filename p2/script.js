@@ -5,6 +5,9 @@ var lineProgram, pointProgram, triangleProgram, polygonProgram;
 var lineBuffer, pointBuffer, triangleBuffer, polygonBuffer;
 var lineColorBuffer, pointColorBuffer, triangleColorBuffer, polygonColorBuffer;
 
+var displayAngle;
+var getSense;
+
 var maxNumTriangles = 200;
 var maxNumVertices = 3 * maxNumTriangles;
 var colorArray = [];
@@ -210,7 +213,10 @@ window.onload = function init() {
     const polygonButton = document.getElementById("polygon");
     const triangleButton = document.getElementById("triangles");
 
-    const colorMenu = document.getElementById("mymenu");
+    displayAngle = document.getElementById('infoAngle');
+    getSense = document.getElementById('sense');
+
+    const colorMenu = document.getElementById("color-menu");
 
     const drawButton = document.getElementById("draw");
     const clearButton = document.getElementById("clear");
@@ -228,17 +234,18 @@ window.onload = function init() {
     polygonButton.onclick = setPolygons
     triangleButton.onclick = setTriangles
 
-    // click coordinates
-    var x, y;
-
     canvas.addEventListener("mousedown", clickOnCanvas);
 
     drawButton.onclick = () => {
         unhighlightObj(selectedObj)
         selectedAction = actions.DRAW;
+        isSelected = false;
+        selectedObj = -1;
         console.log(`Selected action: draw`)
     }
     clearButton.onclick = () => {
+        isSelected = false;
+        selectedObj = -1;
         selectedAction = actions.CLEAR;
     }
     moveButton.onclick = () => {
@@ -251,14 +258,22 @@ window.onload = function init() {
         }
 
         console.log('Selected action: move');
+        isSelected = false;
+        selectedObj = -1;
         selectedAction = actions.MOVE;
     }
+
     rotateButton.onclick = () => {
-        if (selectedDrawMode != drawMode.POLYGONS) {
+        if (
+            selectedDrawMode != drawMode.POLYGONS &&
+            selectedDrawMode != drawMode.TRIANGLES
+        ) {
             alert('You must select a polygon.');
             return;
         }
 
+        isSelected = false;
+        selectedObj = -1;
         unhighlightObj(selectedObj)
         selectedAction = actions.ROTATE;
     }
@@ -272,6 +287,9 @@ const clickOnCanvas = (event) => {
     const pos = convertXY(x, y);
 
     // console.log("x: " + x + ", y: " + y);
+
+    const rotateMenu = document.getElementById("rotate-menu");
+    rotateMenu.style = `display: ${selectedAction === actions.ROTATE ? 'block' : 'none'}`
 
     switch (selectedAction) {
         case actions.MOVE:
@@ -470,14 +488,11 @@ const moveOnMouse = (e) => {
 }
 
 const stopMove = (e) => {
-    
+
     if (e.key !== 'Enter') return;
 
-    
     const selIndexStart = 3 * selectedObj;
     const selIndexEnd = 3 + selIndexStart;
-
-    canvas.removeEventListener('mousemove', moveOnMouse);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, triangleColorBuffer);
 
@@ -490,6 +505,7 @@ const stopMove = (e) => {
 
     selectedObj = -1;
     isSelected = false;
+    canvas.removeEventListener('mousemove', moveOnMouse);
 }
 
 // returns the clicked triangle
@@ -505,6 +521,7 @@ function getTriangle(pos) {
             highlightTriangle(i);
 
             console.log("Selected object index: " + pickedIndex);
+            isSelected = true;
             return pickedIndex;
         }
     }
@@ -859,12 +876,170 @@ function unhighlightObj(selObj) {
 //          Rotate objects
 // ----------------------------------------------------------------
 function rotate(pos) {
+    switch (selectedDrawMode) {
+        case drawMode.POLYGONS:
+            moveSquare(pos);
+            break;
+        case drawMode.TRIANGLES:
+            rotateTriangle(pos);
+            break;
+    }
+}
+
+// ----------------------------------------------------------------
+//          Rotate triangle
+// ----------------------------------------------------------------
+function rotateTriangle(pos) {
+
+    if (!isSelected) {
+        selectedObj = getTriangle(pos);
+    }
+    else {
+        canvas.addEventListener('mousedown', startTriangleRotation)
+    }
+}
+
+const startTriangleRotation = (e) => {
+    canvas.addEventListener('mousemove', rotateTriangleOnMouse)
+    canvas.addEventListener('mouseup', stopTriangleRotation)
+}
+
+const rotateTriangleOnMouse = (e) => {
+
+    // gets the mouse y input
+    const mouseY = e.movementY;
+
+    var theta = 0;
+    const senseInput = getSense?.value;
+    const sense = senseInput ? senseInput : 15;
+
+    if (mouseY > 0) {
+        theta += sense
+    } else if (mouseY < 0) {
+        theta -= sense
+    }
+
+    // console.log(`mouseY: ${mouseY}, sense: ${sense}, theta: ${theta}`); // Log values for debugging
+
+    // display the rotation angle
+    displayAngle.innerText = theta < 0 ? "Sentido horário" : "Sentido anti-horário";
+
+    // calculate angle in radians and starts the rotation
+    const angle = theta * (Math.PI / 180);
+    rotateTriangleObj(selectedObj, angle);
+}
+
+const stopTriangleRotation = (e) => {
+
+    const selIndexStart = 3 * selectedObj;
+    const selIndexEnd = 3 + selIndexStart;
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, triangleColorBuffer);
+
+    // get index of color of selected object
+    const triangleColor = trianglesColors[selectedObj];
+
+    gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndexEnd - 3), flatten(triangleColor));
+    gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndexEnd - 2), flatten(triangleColor));
+    gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndexEnd - 1), flatten(triangleColor));
+
+    selectedObj = -1;
+    isSelected = false;
+    isRotating = false;
+
+    canvas.removeEventListener('mousemove', rotateTriangleOnMouse);
+    canvas.removeEventListener('mousedown', startTriangleRotation);
+    canvas.removeEventListener('mouseup', stopTriangleRotation);
+}
+
+function rotateTriangleObj(obj, angle) {
+
+    var cos, sin;
+    var selIndexStart = 3 * obj;
+
+    // new center is 0, old center is selected center
+    var newX = 0, newY = 0;
+    var oldX = 0, oldY = 0;
+    var deltaX = 0, deltaY = 0;
+
+    // get original vertices
+    vt1 = triangles[obj][0][0];
+    vt2 = triangles[obj][0][1];
+    vt3 = triangles[obj][1][1];
+
+    // calculate current center
+    oldX = (vt1[0] + vt2[0] + vt3[0]) / 3;
+    oldY = (vt1[1] + vt2[1] + vt3[1]) / 3;
+
+    // calculate delta from old position to center
+    deltaX = newX - oldX;
+    deltaY = newY - oldY;
+
+    // calculate new vertices positions
+    var refV1 = [0, 0]
+    refV1[0] = vt1[0] + deltaX;
+    refV1[1] = vt1[1] + deltaY;
+
+    var refV2 = [0, 0]
+    refV2[0] = vt2[0] + deltaX;
+    refV2[1] = vt2[1] + deltaY;
+
+    var refV3 = [0, 0]
+    refV3[0] = vt3[0] + deltaX;
+    refV3[1] = vt3[1] + deltaY;
+
+    // calculate cos and sin to apply the rotation
+    cos = Math.cos(angle);
+    sin = Math.sin(angle);
+
+    // object is centered, now rotate  
+    var rotation = mat2(
+        vec2(cos, sin),
+        vec2(-sin, cos)
+    );
+
+    // new vertices
+    refV1 = (mult(mat2(refV1[0], refV1[1]), rotation))[0];
+    refV2 = (mult(mat2(refV2[0], refV2[1]), rotation))[0];
+    refV3 = (mult(mat2(refV3[0], refV3[1]), rotation))[0];
+
+    // object is rotated, now move back
+    // new center is now going to be old center
+    newX = oldX, newY = oldY;
+    oldX = 0, oldY = 0;
+
+    // calculate delta again
+    deltaX = newX - oldX;
+    deltaY = newY - oldY;
+
+    // calculate rotated vertices positions
+    vt1[0] = refV1[0] + deltaX;
+    vt1[1] = refV1[1] + deltaY;
+
+    vt2[0] = refV2[0] + deltaX;
+    vt2[1] = refV2[1] + deltaY;
+
+    vt3[0] = refV3[0] + deltaX;
+    vt3[1] = refV3[1] + deltaY;
+
+    // now, update final position and convert to canvas
+    updateTriangleEdges(vt1, vt2, vt3);
+
+    // update buffer
+    gl.bindBuffer(gl.ARRAY_BUFFER, triangleBuffer);
+
+    gl.bufferSubData(gl.ARRAY_BUFFER, 8 * selIndexStart, flatten(vt1));
+    gl.bufferSubData(gl.ARRAY_BUFFER, 8 * (selIndexStart + 1), flatten(vt2));
+    gl.bufferSubData(gl.ARRAY_BUFFER, 8 * (selIndexStart + 2), flatten(vt3));
+}
+
+function rotateSquare(pos) {
 
     const x = pos[0];
     const y = pos[1];
 
     if (!isSelected) {
-        obj = getSelected(x, y);
+        obj = getTriangle(x, y);
         console.log("selected object index: " + obj);
 
         if (obj > -1) isRotating = true;
@@ -875,7 +1050,6 @@ function rotate(pos) {
 
 function rotateObj(obj, vBuffer, cBuffer) {
 
-
     var theta = 0;
     var angle, cos, sin;
     var selIndexStart = 4 * obj;
@@ -883,7 +1057,6 @@ function rotateObj(obj, vBuffer, cBuffer) {
 
     canvas.addEventListener("wheel", (e) => {
 
-        if (!isRotating) return;
 
         if (e.deltaY > 0) {
             theta = (theta + 10) % 360;

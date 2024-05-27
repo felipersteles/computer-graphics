@@ -620,6 +620,9 @@ function scale( s, u )
 
 function flatten( v )
 {
+
+    if(!v) return;
+
     if ( v.matrix === true ) {
         v = transpose( v );
     }
