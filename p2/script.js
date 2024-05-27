@@ -234,7 +234,7 @@ window.onload = function init() {
     polygonButton.onclick = setPolygons
     triangleButton.onclick = setTriangles
 
-    canvas.addEventListener("mousedown", clickOnCanvas);
+    canvas.addEventListener("click", clickOnCanvas);
 
     drawButton.onclick = () => {
         unhighlightObj(selectedObj)
@@ -262,7 +262,6 @@ window.onload = function init() {
         selectedObj = -1;
         selectedAction = actions.MOVE;
     }
-
     rotateButton.onclick = () => {
         if (
             selectedDrawMode != drawMode.POLYGONS &&
@@ -469,9 +468,8 @@ function move(pos) {
 //          Move triangle
 //  ---------------------------------------------------------------
 function moveTriangle(pos) {
-    if (!isSelected)
-        selectedObj = getTriangle(pos);
-    else {
+    selectedObj = getTriangle(pos);
+    if (selectedObj >= 0) {
         canvas.addEventListener('mousemove', moveOnMouse)
         document.addEventListener('keypress', stopMove)
     }
@@ -506,6 +504,7 @@ const stopMove = (e) => {
     selectedObj = -1;
     isSelected = false;
     canvas.removeEventListener('mousemove', moveOnMouse);
+    canvas.addEventListener("click", clickOnCanvas);
 }
 
 // returns the clicked triangle
@@ -527,7 +526,7 @@ function getTriangle(pos) {
     }
 
     isSelected = false;
-    return null;
+    return -1;
 }
 
 function highlightTriangle(selObj) {
@@ -891,13 +890,13 @@ function rotate(pos) {
 // ----------------------------------------------------------------
 function rotateTriangle(pos) {
 
-    if (!isSelected) {
-        selectedObj = getTriangle(pos);
-    }
-    else {
-        canvas.addEventListener('mousedown', startTriangleRotation)
-    }
+    selectedObj = getTriangle(pos);
+
+    if(selectedObj < 0) return;
+
+    canvas.addEventListener('mousedown', startTriangleRotation)
 }
+
 
 const startTriangleRotation = (e) => {
     canvas.addEventListener('mousemove', rotateTriangleOnMouse)
@@ -905,6 +904,8 @@ const startTriangleRotation = (e) => {
 }
 
 const rotateTriangleOnMouse = (e) => {
+
+    if(selectedObj < 0) return;
 
     // gets the mouse y input
     const mouseY = e.movementY;
@@ -947,12 +948,14 @@ const stopTriangleRotation = (e) => {
     isSelected = false;
     isRotating = false;
 
-    canvas.removeEventListener('mousemove', rotateTriangleOnMouse);
     canvas.removeEventListener('mousedown', startTriangleRotation);
+    canvas.removeEventListener('mousemove', rotateTriangleOnMouse);
     canvas.removeEventListener('mouseup', stopTriangleRotation);
 }
 
 function rotateTriangleObj(obj, angle) {
+
+    if(obj < 0) return;
 
     var cos, sin;
     var selIndexStart = 3 * obj;
