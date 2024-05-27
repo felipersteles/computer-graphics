@@ -55,26 +55,36 @@ void main()
     }
     </script>
 
-<script id="polygon-vertex-shader" type="x-shader/x-vertex">
-    attribute vec4 vPosition;
-    attribute vec4 vColor;
-    varying vec4 fColor;
-    void main() {
-        gl_Position = vPosition;
-        fColor = vColor;
-    }
+    <script id="triangle-vertex-shader" type="x-shader/x-vertex">
+        attribute vec4 vPosition;
+        attribute vec4 vColor;
+        varying vec4 fColor;
+        void main() {
+            gl_Position = vPosition;
+            fColor = vColor;
+        }
     </script>
 
-<script id="fragment-shader" type="x-shader/x-fragment">
+    <script id="polygon-vertex-shader" type="x-shader/x-vertex">
+        attribute vec4 vPosition;
+        attribute vec4 vColor;
+        varying vec4 fColor;
+        void main() {
+            gl_Position = vPosition;
+            fColor = vColor;
+        }
+    </script>
 
-precision mediump float;
+    <script id="fragment-shader" type="x-shader/x-fragment">
 
-varying vec4 fColor;
-void main()
-{
-    gl_FragColor = fColor;
-}
-</script>
+    precision mediump float;
+
+    varying vec4 fColor;
+    void main()
+    {
+        gl_FragColor = fColor;
+    }
+    </script>
 
 <script type="text/javascript" src="../Common/webgl-utils.js"></script>
 <script type="text/javascript" src="../Common/initShaders.js"></script>
@@ -93,10 +103,11 @@ void main()
             <div style="display: flex; flex-direction: column; gap: 6px;">
                 <button id="point">Point</button>
                 <button id="line">Line</button>
-                <button id="polygon">Polygon</button>
+                <button id="triangles">Triangle</button>
+                <button id="polygon">Square</button>
             </div>
             <div>
-                <select id="mymenu" size="7">
+                <select style="margin-top: 10px;" id="mymenu" size="7">
                     <option value="0">Black</option>
                     <option value="1">Red</option>
                     <option value="2">Yellow</option>
@@ -123,7 +134,7 @@ void main()
 
         <div>
             <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
-          </div>
+        </div>
 
         <div class="buttons">
 
