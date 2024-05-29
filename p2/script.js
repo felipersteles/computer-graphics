@@ -253,14 +253,7 @@ window.onload = function init() {
         showMode.innerText = `Drawing: `
     };
 
-    clearButton.onclick = () => {
-        unHighlightTriangle();
-        unHighlightSquare();
-        isSelected = false;
-        selectedObj = -1;
-        selectedAction = actions.CLEAR;
-        window.location.reload(true);
-    };
+    clearButton.onclick = () => clear();
 
     moveButton.onclick = () => {
         if (
@@ -1261,4 +1254,21 @@ function unHighlightSquare() {
 
 function clearAll() {
 
+    // wrong way :/
+    // window.location.reload(true);
+
+    gl.deleteProgram(pointProgram);
+    pointProgram = initShaders(gl, "point-vertex-shader", "fragment-shader");
+    gl.deleteProgram(lineProgram);
+    lineProgram = initShaders(gl, "point-vertex-shader", "fragment-shader");
+    gl.deleteProgram(triangleProgram);
+    triangleProgram = initShaders(gl, "point-vertex-shader", "fragment-shader");
+    gl.deleteProgram(polygonProgram);
+    polygonProgram = initShaders(gl, "point-vertex-shader", "fragment-shader");
+
+    unHighlightTriangle();
+    unHighlightSquare();
+    isSelected = false;
+    selectedObj = -1;
+    selectedAction = actions.CLEAR;
 }
