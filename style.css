@@ -1,0 +1,173 @@
+header {
+    background-color: #f1f1f1;
+    padding: 20px 15px;
+}
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1000px;
+    margin: 0 auto;
+    /* Centers the header horizontally */
+}
+
+.logo {
+    font-size: 20px;
+    font-weight: bold;
+    text-decoration: none;
+    color: #333;
+}
+
+nav {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+nav li {
+    margin: 0 10px;
+    display: inline-block;
+    /* Makes list items side-by-side */
+}
+
+nav a {
+    text-decoration: none;
+    color: #333;
+    padding: 5px 10px;
+    border: 1px solid transparent;
+    /* Adds a transparent border initially */
+    transition: all 0.3s ease-in-out;
+    /* Enables smooth transition on hover */
+}
+
+nav a:hover {
+    background-color: #eee;
+    /* Background color on hover */
+    border-color: #ddd;
+    /* Changes border color on hover */
+}
+
+.home {
+    padding: 50px;
+    /* Adjust padding for desired spacing */
+    text-align: center;
+    /* Centers the content horizontally */
+}
+
+h1 {
+    font-size: 2em;
+    /* Increase heading size */
+    margin-bottom: 20px;
+    /* Add space between heading and paragraph */
+}
+
+.home p {
+    font-size: 1.2em;
+    /* Adjust paragraph font size */
+    line-height: 1.5;
+    /* Increase line spacing for readability */
+}
+
+.links {
+    padding: 0 30px 30px;
+    text-align: center;
+    /* Optional: Center the section content horizontally */
+}
+
+.links h2 {
+    font-size: 1.5em;
+    margin-bottom: 8px;
+}
+
+.links ul {
+    list-style: none;
+    /* Remove default bullet points */
+    padding: 0;
+    margin: 0;
+    /* Reset default list margins */
+}
+
+.links li {
+    margin: 15px 0;
+}
+
+.links a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+}
+
+.links a:hover {
+    color: #666;
+    /* Change link color on hover */
+}
+
+.links p {
+    font-size: 0.9em;
+    margin-top: 5px;
+    color: #777;
+}
+
+.more-applications {
+    padding: 30px 30px;
+    background-color: #f5f5f5;
+    /* Light gray background */
+    border-radius: 5px;
+    /* Rounded corners */
+    margin: 20px 0 0;
+    /* Add space above and below the section */
+}
+
+.center{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.more-applications h2 {
+    font-size: 1.5em;
+    margin-bottom: 15px;
+    text-align: center;
+    /* Center the title horizontally */
+}
+
+.more-applications p {
+    font-size: 1em;
+    line-height: 1.5;
+    /* Increase line spacing for readability */
+}
+
+.more-applications p:first-child {
+    /* Style the first paragraph (title) */
+    font-weight: bold;
+}
+
+footer {
+    background-color: #f2f2f2;
+    padding: 1rem;
+    text-align: center;
+}
+
+.copyright {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #333;
+}
+
+/* Responsiveness for smaller screens */
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        /* Stacks elements vertically on small screens*/
+        align-items: flex-start;
+        /* Aligns logo and nav to the left */
+    }
+
+    nav {
+        margin-top: 10px;
+        /* Adds space between logo and nav on small screens */
+    }
+}
