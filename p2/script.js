@@ -1,3 +1,18 @@
+// ----------------------------------------------------------------
+// Copyright (c) Teles and Celso 2024
+//
+// Permission is hereby granted, free of charge, to any person obtaining
+// a copy of this software and associated
+// documentation files (the "Software ")
+//
+// |-----------------------------------|
+// | UNIVERSIDADE FEDERAL DO MARANHÃO  |
+// |-----------------------------------|
+//
+// Segunda avaliação de Computação Gráfica
+//      disciplina ministrada pelo prof. dr. Darlan
+//
+// ----------------------------------------------------------------
 var canvas;
 var gl;
 var lineProgram, pointProgram, triangleProgram, polygonProgram;
@@ -37,7 +52,7 @@ var cIndex = 0;
 //              Select a object
 // ----------------------------------------------------------------
 
-var selectedObj = -1;
+var selectedTriangle = -1, selectedSquare = -1;
 var isSelected = false;
 var isRotating = false;
 
@@ -68,14 +83,12 @@ const setLines = () => {
 };
 
 const setPolygons = () => {
-    selectedAction = actions.DRAW;
     selectedDrawMode = drawMode.POLYGONS;
     var show = document.getElementById("object");
     show.innerText = `polygons`;
 };
 
 const setTriangles = () => {
-    selectedAction = actions.DRAW;
     selectedDrawMode = drawMode.TRIANGLES;
     var show = document.getElementById("object");
     show.innerText = `triangles`;
@@ -211,6 +224,7 @@ window.onload = function init() {
 
     const colorMenu = document.getElementById("color-menu");
 
+    const showMode = document.getElementById("mode");
     const drawButton = document.getElementById("draw");
     const clearButton = document.getElementById("clear");
     const moveButton = document.getElementById("move");
@@ -230,17 +244,22 @@ window.onload = function init() {
     canvas.addEventListener("click", clickOnCanvas);
 
     drawButton.onclick = () => {
-        unhighlightObj(selectedObj);
+        unHighlightTriangle();
+        unHighlightSquare();
         selectedAction = actions.DRAW;
         isSelected = false;
         selectedObj = -1;
         console.log(`Selected action: draw`);
+        showMode.innerText = `Drawing: `
     };
 
     clearButton.onclick = () => {
+        unHighlightTriangle();
+        unHighlightSquare();
         isSelected = false;
         selectedObj = -1;
         selectedAction = actions.CLEAR;
+        window.location.reload(true);
     };
 
     moveButton.onclick = () => {
@@ -253,9 +272,12 @@ window.onload = function init() {
         }
 
         console.log('Selected action: move');
-        isSelected = false;
-        selectedObj = -1;
+
+        unHighlightTriangle();
+        unHighlightSquare();
+
         selectedAction = actions.MOVE;
+        showMode.innerText = `Moving: `
     };
 
     rotateButton.onclick = () => {
@@ -267,10 +289,13 @@ window.onload = function init() {
             return;
         }
 
-        isSelected = false;
-        selectedObj = -1;
-        unhighlightObj(selectedObj);
+        console.log('Selected action: rotation');
+
+        unHighlightTriangle();
+        unHighlightSquare();
+
         selectedAction = actions.ROTATE;
+        showMode.innerText = `Rotating: `
     };
 
     render();
@@ -456,151 +481,106 @@ function move(pos) {
 //          Move triangle
 //  ---------------------------------------------------------------
 function moveTriangle(pos) {
-    selectedObj = getTriangle(pos);
-    if (selectedObj >= 0) {
-        canvas.addEventListener('mousemove', moveOnMouse);
-        document.addEventListener('keypress', stopMove);
-    }
+
+    // verify clicked position to get a triangle 
+    selectedTriangle = getTriangle(pos);
+
+    // active event listeners to the selected triangle
+    if (selectedTriangle < 0) return;
+
+    canvas.addEventListener('mousemove', moveTriangleOnMouse);
+    document.addEventListener('keypress', stopMoveTriangle);
 }
 
-const moveOnMouse = (e) => {
+// arrow function for events
+const moveTriangleOnMouse = (e) => {
+
+    if (selectedTriangle < 0) return;
+
+    // get position of mouse cursor
     const newPos = convertXY(e.clientX, e.clientY);
     const newX = newPos[0];
     const newY = newPos[1];
-    moveTriangleObj(selectedObj, newX, newY);
+
+    // move triangle
+    moveTriangleObj(newX, newY);
 }
 
-const stopMove = (e) => {
+// stop triangle move by clicking enter
+const stopMoveTriangle = (e) => {
+
+    // if not enter continue
     if (e.key !== 'Enter') return;
 
-    const selIndexStart = 3 * selectedObj;
-    const selIndexEnd = 3 + selIndexStart;
+    unHighlightTriangle()
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, triangleColorBuffer);
-
-    // Get index of color of selected object
-    const triangleColor = trianglesColors[selectedObj];
-
-    gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndexEnd - 3), flatten(triangleColor));
-    gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndexEnd - 2), flatten(triangleColor));
-    gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndexEnd - 1), flatten(triangleColor));
-
-    selectedObj = -1;
-    isSelected = false;
-    canvas.removeEventListener('mousemove', moveOnMouse);
+    // remove event listeners
+    canvas.removeEventListener('mousemove', moveTriangleOnMouse);
+    document.removeEventListener('keypress', stopMoveTriangle);
     canvas.addEventListener("click", clickOnCanvas);
 }
 
-// Returns the clicked triangle
-function getTriangle(pos) {
-    var pickedIndex; // Index of triangle picked
-    for (let i = triangles.length - 1; i >= 0; i--) {
-        const pickReturn = pickTriangle(i, pos[0], pos[1]);
-        if (pickReturn) {
-            isSelected = true;
-            pickedIndex = i;
-            highlightTriangle(i);
-            console.log("Selected object index: " + pickedIndex);
-            isSelected = true;
-            return pickedIndex;
-        }
-    }
-    isSelected = false;
-    return -1;
-}
+// move the triangle object
+function moveTriangleObj(x, y) {
 
-function highlightTriangle(selObj) {
-    var selColorIndex;
-    if (isSelected) {
-        selIndex = 3 + 3 * selObj;
-        selColorIndex = colorArray[selObj];
-        const color = vec4(highlightedColors[selColorIndex]);
-        gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndex - 3), flatten(color));
-        gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndex - 2), flatten(color));
-        gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndex - 1), flatten(color));
-    }
-}
+    // do not enter in the function if does not have
+    // a selected triangle
+    if (selectedTriangle < 0) return;
 
-function pickTriangle(currentId, x, y) {
-    var ni = 0;
-    var p1, p2; // Edges
-    var p1x, p1y, p2x, p2y;
-    var xc;
+    // get the index reference on the triangle array (start and end)
+    selIndexStart = 3 * selectedTriangle;
+    selIndexEnd = 3 + selIndexStart;
 
-    for (let j = 0; j < 3; j++) {
-        p1 = triangles[currentId][j][0];
-        p2 = triangles[currentId][j][1];
-        p1x = p1[0], p1y = p1[1];
-        p2x = p2[0], p2y = p2[1];
-        if (
-            // Cases to discard:
-            !(p1y == p2y) &&
-            !(p1y > y && p2y > y) &&
-            !(p1y < y && p2y < y) &&
-            !(p1x < x && p2x < x)
-        ) {
-            if (p1y == y) {
-                if (p1x > x && p2y > y) {
-                    ni += 1;
-                }
-            } else if (p2y == y) {
-                if (p2x > x && p1y > y) {
-                    ni += 1;
-                }
-            } else if (p1x > x && p2x > x) {
-                ni += 1;
-            } else {
-                var dx = p1x - p2x;
-                xc = p1x;
-                if (dx != 0.0) {
-                    xc += ((y - p1y) * dx) / (p1y - p2y);
-                }
-                if (xc > x) {
-                    ni += 1;
-                }
-            }
-        }
-    }
-    return ni % 2 === 1;
-}
+    // 
+    //         /\    /\
+    //        /__\  /__\ 
+    //        v[0]  v[1]
+    //
+    //          L> edges = [ [ [A1, B1], [A1, C1], [B1, C1] ] <- selected object = 0,[ [A2, B2], [A2, C2], [B2, C2] ] ]
+    //              [A1, B1] <- triangles[selected object][0][1]
+    //              [A1, C1] <- triangles[selected object][1]
+    //              [B1, C1] <- triangles[selected object][2]
+    //
+    // get the triangle vertices
+    vt1 = triangles[selectedTriangle][0][0];
+    vt2 = triangles[selectedTriangle][2][0];
+    vt3 = triangles[selectedTriangle][1][1];
 
-function moveTriangleObj(selObj, x, y) {
-    var oldX, oldY;
-    var newX, newY;
-    var deltaX, deltaY;
-    var selIndexStart;
+    // initial position of the center of the triangle
+    const oldX = (vt1[0] + vt2[0] + vt3[0]) / 3;
+    const oldY = (vt1[1] + vt2[1] + vt3[1]) / 3;
 
-    if (isSelected) {
-        selIndexStart = 3 * selObj;
-        selIndexEnd = 3 + selIndexStart;
-        vt1 = triangles[selObj][0][0];
-        vt2 = triangles[selObj][0][1];
-        vt3 = triangles[selObj][1][1];
-        oldX = (vt1[0] + vt2[0] + vt3[0]) / 3;
-        oldY = (vt1[1] + vt2[1] + vt3[1]) / 3;
-        newX = x, newY = y;
-        deltaX = newX - oldX;
-        deltaY = newY - oldY;
-        vt1[0] = vt1[0] + deltaX;
-        vt1[1] = vt1[1] + deltaY;
-        vt2[0] = vt2[0] + deltaX;
-        vt2[1] = vt2[1] + deltaY;
-        vt3[0] = vt3[0] + deltaX;
-        vt3[1] = vt3[1] + deltaY;
-        updateTriangleEdges(selObj, vt1, vt2, vt3);
-        gl.bindBuffer(gl.ARRAY_BUFFER, triangleBuffer);
-        gl.bufferSubData(gl.ARRAY_BUFFER, 8 * selIndexStart, flatten(vt1));
-        gl.bufferSubData(gl.ARRAY_BUFFER, 8 * (selIndexStart + 1), flatten(vt2));
-        gl.bufferSubData(gl.ARRAY_BUFFER, 8 * (selIndexStart + 2), flatten(vt3));
-    }
-}
+    // new position of the center of the triangle
+    // x and y -> passed by mouse click
+    const newX = x, newY = y;
 
-function updateTriangleEdges(selObj, a, b, c) {
-    triangles[selObj] = [
-        [a, b],
-        [a, c],
-        [b, c]
-    ];
+    // translocation factor of the center
+    const deltaX = newX - oldX;
+    const deltaY = newY - oldY;
+
+    // calculating the new vertices
+    // v1
+    vt1[0] = vt1[0] + deltaX;
+    vt1[1] = vt1[1] + deltaY;
+
+    // v2
+    vt2[0] = vt2[0] + deltaX;
+    vt2[1] = vt2[1] + deltaY;
+
+    //v3
+    vt3[0] = vt3[0] + deltaX;
+    vt3[1] = vt3[1] + deltaY;
+
+    // update the triangle edges array
+    updateTriangleEdges(selectedTriangle, vt1, vt2, vt3);
+
+    // set triangle buffer
+    gl.bindBuffer(gl.ARRAY_BUFFER, triangleBuffer);
+
+    // draw triangle new position
+    gl.bufferSubData(gl.ARRAY_BUFFER, 8 * selIndexStart, flatten(vt1));
+    gl.bufferSubData(gl.ARRAY_BUFFER, 8 * (selIndexStart + 1), flatten(vt2));
+    gl.bufferSubData(gl.ARRAY_BUFFER, 8 * (selIndexStart + 2), flatten(vt3));
 }
 
 // ----------------------------------------------------------------
@@ -608,171 +588,116 @@ function updateTriangleEdges(selObj, a, b, c) {
 //  ---------------------------------------------------------------
 
 function moveSquare(pos) {
-    const x = pos[0];
-    const y = pos[1];
-    if (!isSelected) {
-        selectedObj = getSquare(x, y);
-        if (selectedObj >= 0) {
-            canvas.addEventListener('mousemove', moveSquareOnMouse);
-            document.addEventListener('keypress', stopMoveSquare);
-        }
+
+    // verify clicked position to ger a square
+    selectedObj = getSquare(pos);
+
+    // active event listeners to the selected square
+    if (selectedObj >= 0) {
+        canvas.addEventListener('mousemove', moveSquareOnMouse);
+        document.addEventListener('keypress', stopMoveSquare);
     }
 }
 
+// arrow function for events
 const moveSquareOnMouse = (e) => {
+    // get position of mouse cursor
     const newPos = convertXY(e.clientX, e.clientY);
     const newX = newPos[0];
     const newY = newPos[1];
+
+    // move square
     moveSquareObj(selectedObj, newX, newY);
 }
 
+// stop square move by clicking enter
 const stopMoveSquare = (e) => {
+    // if not enter continue
     if (e.key !== 'Enter') return;
 
+    // get reference index of selected square
     const selIndexStart = 4 * selectedObj;
     const selIndexEnd = 4 + selIndexStart;
 
+    // set square color buffer
     gl.bindBuffer(gl.ARRAY_BUFFER, polygonColorBuffer);
 
-    // Get index of color of selected object
+    // Get index of color of selected square
     const polygonColor = polygonsColors[selectedObj];
 
+    // paint the square with the original color
     gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndexEnd - 4), flatten(polygonColor));
     gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndexEnd - 3), flatten(polygonColor));
     gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndexEnd - 2), flatten(polygonColor));
     gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndexEnd - 1), flatten(polygonColor));
 
+    // unselect object
     selectedObj = -1;
     isSelected = false;
+
+    // remove event listeners
     canvas.removeEventListener('mousemove', moveSquareOnMouse);
+    document.removeEventListener('keypress', stopMoveSquare);
     canvas.addEventListener("click", clickOnCanvas);
 }
 
+// move the square object
 function moveSquareObj(selObj, x, y) {
-    var oldX, oldY;
-    var newX, newY;
-    var deltaX, deltaY;
-    var selIndexStart;
 
-    if (isSelected) {
-        selIndexStart = 4 * selObj;
-        selIndexEnd = 4 + selIndexStart;
-        v1 = polygons[selObj][0][0];
-        v2 = polygons[selObj][2][0];
-        v3 = polygons[selObj][0][1];
-        v4 = polygons[selObj][1][1];
-        oldX = (v1[0] + v2[0]) / 2;
-        oldY = (v1[1] + v2[1]) / 2;
-        newX = x, newY = y;
-        deltaX = newX - oldX;
-        deltaY = newY - oldY;
-        v1[0] = v1[0] + deltaX;
-        v1[1] = v1[1] + deltaY;
-        v2[0] = v2[0] + deltaX;
-        v2[1] = v2[1] + deltaY;
-        v3[0] = v3[0] + deltaX;
-        v3[1] = v3[1] + deltaY;
-        v4[0] = v4[0] + deltaX;
-        v4[1] = v4[1] + deltaY;
-        updateSquareEdges(selObj, v1, v2, v3, v4);
-        gl.bindBuffer(gl.ARRAY_BUFFER, polygonBuffer);
-        gl.bufferSubData(gl.ARRAY_BUFFER, 8 * selIndexStart, flatten(v1));
-        gl.bufferSubData(gl.ARRAY_BUFFER, 8 * (selIndexStart + 1), flatten(v3));
-        gl.bufferSubData(gl.ARRAY_BUFFER, 8 * (selIndexStart + 2), flatten(v2));
-        gl.bufferSubData(gl.ARRAY_BUFFER, 8 * (selIndexStart + 3), flatten(v4));
-    }
-}
-
-function updateSquareEdges(selObj, a, b, c, d) {
-    polygons[selObj] = [
-        [a, c],
-        [a, d],
-        [b, c],
-        [b, d]
-    ];
-}
-
-function getSquare(clickX, clickY) {
-    var pickedIndex;
-    for (let i = polygons.length - 1; i >= 0; i--) {
-        const pickReturn = pickArea(i, clickX, clickY);
-        if (pickReturn) {
-            isSelected = true;
-            pickedIndex = i;
-            highlightObj(i);
-            console.log("Selected object index: " + pickedIndex);
-            return pickedIndex;
-        }
-    }
-    isSelected = false;
-    return null;
-}
-
-function pickArea(currentId, x, y) {
-    var ni = 0;
-    var p1, p2; // Edges
-    var p1x, p1y, p2x, p2y;
-    var xc;
-
-    for (let j = 0; j < 4; j++) {
-        p1 = polygons[currentId][j][0];
-        p2 = polygons[currentId][j][1];
-        p1x = p1[0], p1y = p1[1];
-        p2x = p2[0], p2y = p2[1];
-        if (
-            !(p1y == p2y) &&
-            !(p1y > y && p2y > y) &&
-            !(p1y < y && p2y < y) &&
-            !(p1x < x && p2x < x)
-        ) {
-            if (p1y == y) {
-                if (p1x > x && p2y > y) {
-                    ni += 1;
-                }
-            } else if (p2y == y) {
-                if (p2x > x && p1y > y) {
-                    ni += 1;
-                }
-            } else if (p1x > x && p2x > x) {
-                ni += 1;
-            } else {
-                var dx = p1x - p2x;
-                xc = p1x;
-                if (dx != 0.0) {
-                    xc += ((y - p1y) * dx) / (p1y - p2y);
-                }
-                if (xc > x) {
-                    ni += 1;
-                }
-            }
-        }
-    }
-    return ni % 2 === 1;
-}
-
-function highlightObj(selObj) {
-    var selColorIndex;
-    if (isSelected) {
-        selIndex = 4 + 4 * selObj;
-        selColorIndex = colorArray[selObj];
-        const t = vec4(highlightedColors[selColorIndex]);
-        gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndex - 4), flatten(t));
-        gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndex - 3), flatten(t));
-        gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndex - 2), flatten(t));
-        gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndex - 1), flatten(t));
-    }
-}
-
-function unhighlightObj(selObj) {
+    // do not enter in the function of does not have
+    // a selected square
     if (!isSelected) return;
-    const selIndex = 4 + 4 * selObj;
-    const polygonColor = polygonsColors[selObj];
-    gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndex - 4), flatten(polygonColor));
-    gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndex - 3), flatten(polygonColor));
-    gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndex - 2), flatten(polygonColor));
-    gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndex - 1), flatten(polygonColor));
-    selectedObj = -1;
-    isSelected = false;
+
+    // get the index reference on the square array (start and end)
+    selIndexStart = 4 * selObj;
+    selIndexEnd = 4 + selIndexStart;
+
+    // get the square vertices
+    v1 = polygons[selObj][0][0];
+    v2 = polygons[selObj][2][0];
+    v3 = polygons[selObj][0][1];
+    v4 = polygons[selObj][1][1];
+
+    // initial position of the center of the square
+    const oldX = (v1[0] + v2[0]) / 2;
+    const oldY = (v1[1] + v2[1]) / 2;
+
+    // new position of the center of the square
+    // x and y  -> passed by mouse click
+    const newX = x, newY = y;
+
+    // translocation factor of the center
+    const deltaX = newX - oldX;
+    const deltaY = newY - oldY;
+
+    // calculating the new vertices
+    //v1
+    v1[0] = v1[0] + deltaX;
+    v1[1] = v1[1] + deltaY;
+
+    //v2
+    v2[0] = v2[0] + deltaX;
+    v2[1] = v2[1] + deltaY;
+
+    //v3
+    v3[0] = v3[0] + deltaX;
+    v3[1] = v3[1] + deltaY;
+
+    //v4
+    v4[0] = v4[0] + deltaX;
+    v4[1] = v4[1] + deltaY;
+
+    // update the square edges array
+    updateSquareEdges(selObj, v1, v2, v3, v4);
+
+    // set square buffer
+    gl.bindBuffer(gl.ARRAY_BUFFER, polygonBuffer);
+
+    // draw square new position
+    gl.bufferSubData(gl.ARRAY_BUFFER, 8 * selIndexStart, flatten(v1));
+    gl.bufferSubData(gl.ARRAY_BUFFER, 8 * (selIndexStart + 1), flatten(v3));
+    gl.bufferSubData(gl.ARRAY_BUFFER, 8 * (selIndexStart + 2), flatten(v2));
+    gl.bufferSubData(gl.ARRAY_BUFFER, 8 * (selIndexStart + 3), flatten(v4));
 }
 
 // ----------------------------------------------------------------
@@ -781,7 +706,7 @@ function unhighlightObj(selObj) {
 function rotate(pos) {
     switch (selectedDrawMode) {
         case drawMode.POLYGONS:
-            rotatePolygon(pos);
+            rotateSquare(pos);
             break;
         case drawMode.TRIANGLES:
             rotateTriangle(pos);
@@ -793,174 +718,234 @@ function rotate(pos) {
 //          Rotate triangle
 // ----------------------------------------------------------------
 function rotateTriangle(pos) {
-    selectedObj = getTriangle(pos);
-    if (selectedObj < 0) return;
+    selectedTriangle = getTriangle(pos);
+
+    if (selectedTriangle < 0) return;
     canvas.addEventListener('mousedown', startTriangleRotation);
 }
 
-const startTriangleRotation = (e) => {
+const startTriangleRotation = () => {
     canvas.addEventListener('mousemove', rotateTriangleOnMouse);
     canvas.addEventListener('mouseup', stopTriangleRotation);
 }
 
 const rotateTriangleOnMouse = (e) => {
-    if (selectedObj < 0) return;
+
+    if (selectedTriangle < 0) return;
+
     const mouseY = e.movementY;
-    var theta = 0;
     const senseInput = getSense?.value;
     const sense = senseInput ? senseInput : 15;
+
+    var theta = 0;
     if (mouseY > 0) {
         theta += sense;
     } else if (mouseY < 0) {
         theta -= sense;
     }
+
     displayAngle.innerText = theta < 0 ? "Sentido horário" : "Sentido anti-horário";
     const angle = theta * (Math.PI / 180);
-    rotateTriangleObj(selectedObj, angle);
+
+    rotateTriangleObj(angle);
 }
 
-const stopTriangleRotation = (e) => {
-    const selIndexStart = 3 * selectedObj;
-    const selIndexEnd = 3 + selIndexStart;
-    gl.bindBuffer(gl.ARRAY_BUFFER, triangleColorBuffer);
-    const triangleColor = trianglesColors[selectedObj];
-    gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndexEnd - 3), flatten(triangleColor));
-    gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndexEnd - 2), flatten(triangleColor));
-    gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndexEnd - 1), flatten(triangleColor));
-    selectedObj = -1;
-    isSelected = false;
+const stopTriangleRotation = () => {
+
+    canvas.removeEventListener('mouseup', stopTriangleRotation);
+    if (selectedTriangle < 0) return;
+
+    unHighlightTriangle()
+
     isRotating = false;
+
+    // remove events of rotation
     canvas.removeEventListener('mousedown', startTriangleRotation);
     canvas.removeEventListener('mousemove', rotateTriangleOnMouse);
-    canvas.removeEventListener('mouseup', stopTriangleRotation);
 }
 
-function rotateTriangleObj(obj, angle) {
-    if (obj < 0) return;
+function rotateTriangleObj(angle) {
+
+    // condition to rotate
+    if (selectedTriangle < 0) return;
+
+    // get the value of rotation by cos and sin
     var cos = Math.cos(angle);
     var sin = Math.sin(angle);
-    var selIndexStart = 3 * obj;
+
+    // get triangle informations
+    var selIndexStart = 3 * selectedTriangle;
     var newX = 0, newY = 0;
     var oldX = 0, oldY = 0;
     var deltaX = 0, deltaY = 0;
-    vt1 = triangles[obj][0][0];
-    vt2 = triangles[obj][0][1];
-    vt3 = triangles[obj][1][1];
+
+    // get triangle vertices
+    vt1 = triangles[selectedTriangle][0][0];
+    vt2 = triangles[selectedTriangle][0][1];
+    vt3 = triangles[selectedTriangle][1][1];
+
+    // get triangle center
     oldX = (vt1[0] + vt2[0] + vt3[0]) / 3;
     oldY = (vt1[1] + vt2[1] + vt3[1]) / 3;
+
+    // moving triangle to center
     deltaX = newX - oldX;
     deltaY = newY - oldY;
+
+    // creating references of vertices
     var refV1 = [0, 0];
     refV1[0] = vt1[0] + deltaX;
     refV1[1] = vt1[1] + deltaY;
+
     var refV2 = [0, 0];
     refV2[0] = vt2[0] + deltaX;
     refV2[1] = vt2[1] + deltaY;
+
     var refV3 = [0, 0];
     refV3[0] = vt3[0] + deltaX;
     refV3[1] = vt3[1] + deltaY;
+
+    // calculate the rotation matrix
     var rotation = mat2(
         vec2(cos, sin),
         vec2(-sin, cos)
     );
+
+    // rotate vertices
     refV1 = (mult(mat2(refV1[0], refV1[1]), rotation))[0];
     refV2 = (mult(mat2(refV2[0], refV2[1]), rotation))[0];
     refV3 = (mult(mat2(refV3[0], refV3[1]), rotation))[0];
+
+    // get back triangle to original position
     newX = oldX, newY = oldY;
     oldX = 0, oldY = 0;
+
+    // moving triangle to original position
     deltaX = newX - oldX;
     deltaY = newY - oldY;
+
+    // moving the first vertice
     vt1[0] = refV1[0] + deltaX;
     vt1[1] = refV1[1] + deltaY;
+
+    // moving the second vertice
     vt2[0] = refV2[0] + deltaX;
     vt2[1] = refV2[1] + deltaY;
+
+    // moving the last vertices 
     vt3[0] = refV3[0] + deltaX;
     vt3[1] = refV3[1] + deltaY;
-    updateTriangleEdges(obj, vt1, vt2, vt3);
+
+    // update triangles array
+    updateTriangleEdges(selectedTriangle, vt1, vt2, vt3);
+
+    // draw triangle on
     gl.bindBuffer(gl.ARRAY_BUFFER, triangleBuffer);
     gl.bufferSubData(gl.ARRAY_BUFFER, 8 * selIndexStart, flatten(vt1));
     gl.bufferSubData(gl.ARRAY_BUFFER, 8 * (selIndexStart + 1), flatten(vt2));
     gl.bufferSubData(gl.ARRAY_BUFFER, 8 * (selIndexStart + 2), flatten(vt3));
+
+    // Copyright: Made by Felipe Teles
 }
 
 // ----------------------------------------------------------------
-//          Rotate polygon
+//          Rotate square
 // ----------------------------------------------------------------
-function rotatePolygon(pos) {
-    const x = pos[0];
-    const y = pos[1];
-    if (!isSelected) {
-        selectedObj = getSquare(x, y);
-        if (selectedObj < 0) return;
-    }
+function rotateSquare(pos) {
+    selectedSquare = getSquare(pos);
+
+    if (selectedSquare < 0) return;
     canvas.addEventListener('mousedown', startPolygonRotation);
 }
 
-const startPolygonRotation = (e) => {
+const startPolygonRotation = () => {
     canvas.addEventListener('mousemove', rotatePolygonOnMouse);
     canvas.addEventListener('mouseup', stopPolygonRotation);
 }
 
 const rotatePolygonOnMouse = (e) => {
-    if (selectedObj < 0) return;
+
+    if (selectedSquare < 0) return;
+
     const mouseY = e.movementY;
-    var theta = 0;
     const senseInput = getSense?.value;
     const sense = senseInput ? senseInput : 15;
+
+    var theta = 0;
     if (mouseY > 0) {
         theta += sense;
     } else if (mouseY < 0) {
         theta -= sense;
     }
+
     displayAngle.innerText = theta < 0 ? "Sentido horário" : "Sentido anti-horário";
     const angle = theta * (Math.PI / 180);
-    rotatePolygonObj(selectedObj, angle);
+
+    rotatePolygonObj(angle);
 }
 
-const stopPolygonRotation = (e) => {
-    selectedObj = -1;
-    isSelected = false;
+const stopPolygonRotation = () => {
+
+    unHighlightSquare()
+
     canvas.removeEventListener('mousedown', startPolygonRotation);
     canvas.removeEventListener('mousemove', rotatePolygonOnMouse);
     canvas.removeEventListener('mouseup', stopPolygonRotation);
 }
 
-function rotatePolygonObj(obj, angle) {
-    if (obj < 0) return;
+function rotatePolygonObj(angle) {
+    if (selectedSquare < 0) return;
+
+
     var cos = Math.cos(angle);
     var sin = Math.sin(angle);
-    var selIndexStart = 4 * obj;
-    var v1 = polygons[obj][0][0];
-    var v2 = polygons[obj][2][0];
-    var v3 = polygons[obj][0][1];
-    var v4 = polygons[obj][1][1];
+    var selIndexStart = 4 * selectedSquare;
+
+    var v1 = polygons[selectedSquare][0][0];
+    var v2 = polygons[selectedSquare][2][0];
+    var v3 = polygons[selectedSquare][0][1];
+    var v4 = polygons[selectedSquare][1][1];
+
     var oldX = (v1[0] + v2[0]) / 2;
     var oldY = (v1[1] + v2[1]) / 2;
+
     var deltaX = 0 - oldX;
     var deltaY = 0 - oldY;
+
     v1[0] += deltaX;
     v1[1] += deltaY;
+
     v2[0] += deltaX;
     v2[1] += deltaY;
+
     v3[0] += deltaX;
     v3[1] += deltaY;
+
     v4[0] += deltaX;
     v4[1] += deltaY;
+
     v1 = [v1[0] * cos - v1[1] * sin, v1[0] * sin + v1[1] * cos];
     v2 = [v2[0] * cos - v2[1] * sin, v2[0] * sin + v2[1] * cos];
     v3 = [v3[0] * cos - v3[1] * sin, v3[0] * sin + v3[1] * cos];
     v4 = [v4[0] * cos - v4[1] * sin, v4[0] * sin + v4[1] * cos];
+
     deltaX = oldX;
     deltaY = oldY;
+
     v1[0] += deltaX;
     v1[1] += deltaY;
+
     v2[0] += deltaX;
     v2[1] += deltaY;
+
     v3[0] += deltaX;
     v3[1] += deltaY;
+
     v4[0] += deltaX;
     v4[1] += deltaY;
-    updateSquareEdges(obj, v1, v2, v3, v4);
+
+    updateSquareEdges(selectedSquare, v1, v2, v3, v4);
+
     gl.bindBuffer(gl.ARRAY_BUFFER, polygonBuffer);
     gl.bufferSubData(gl.ARRAY_BUFFER, 8 * selIndexStart, flatten(v1));
     gl.bufferSubData(gl.ARRAY_BUFFER, 8 * (selIndexStart + 1), flatten(v3));
@@ -1032,4 +1017,248 @@ function render() {
     }
 
     window.requestAnimationFrame(render);
+}
+
+// ----------------------------------------------------------------
+//           Triangle Utils
+// ----------------------------------------------------------------
+
+
+// Returns the clicked triangle
+function getTriangle(pos) {
+    var pickedIndex; // Index of triangle picked
+    for (let i = triangles.length - 1; i >= 0; i--) {
+
+        // check if the clicked position is on triangle
+        const pickReturn = pickTriangle(i, pos[0], pos[1]);
+
+        if (pickReturn) {
+            pickedIndex = i;
+            highlightTriangle(i);
+            console.log("Selected object index: " + pickedIndex);
+            isSelected = true;
+            return pickedIndex;
+        }
+    }
+
+    isSelected = false;
+    return -1;
+}
+
+// Highlight the triangle 
+function highlightTriangle(triangle) {
+
+    selectedTriangle = triangle;
+
+    var selColorIndex;
+
+    selIndex = 3 + 3 * selectedTriangle;
+    selColorIndex = colorArray[selectedTriangle];
+
+    const color = vec4(highlightedColors[selColorIndex]);
+
+    // set triangle color buffer
+    gl.bindBuffer(gl.ARRAY_BUFFER, triangleColorBuffer);
+
+    gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndex - 3), flatten(color));
+    gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndex - 2), flatten(color));
+    gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndex - 1), flatten(color));
+}
+
+// update the edges of triangle in array
+function updateTriangleEdges(selObj, a, b, c) {
+    triangles[selObj] = [
+        [a, b],
+        [a, c],
+        [b, c]
+    ];
+}
+
+// using the picked method learned on the graphic computer classe
+// of prof. dr. Darlan url(???)
+function pickTriangle(currentId, x, y) {
+    var ni = 0;
+    var p1, p2; // Edges
+    var p1x, p1y, p2x, p2y;
+    var xc;
+
+    for (let j = 0; j < 3; j++) {
+        p1 = triangles[currentId][j][0];
+        p2 = triangles[currentId][j][1];
+        p1x = p1[0], p1y = p1[1];
+        p2x = p2[0], p2y = p2[1];
+        if (
+            // Cases to discard:
+            !(p1y == p2y) &&
+            !(p1y > y && p2y > y) &&
+            !(p1y < y && p2y < y) &&
+            !(p1x < x && p2x < x)
+        ) {
+            if (p1y == y) {
+                if (p1x > x && p2y > y) {
+                    ni += 1;
+                }
+            } else if (p2y == y) {
+                if (p2x > x && p1y > y) {
+                    ni += 1;
+                }
+            } else if (p1x > x && p2x > x) {
+                ni += 1;
+            } else {
+                var dx = p1x - p2x;
+                xc = p1x;
+                if (dx != 0.0) {
+                    xc += ((y - p1y) * dx) / (p1y - p2y);
+                }
+                if (xc > x) {
+                    ni += 1;
+                }
+            }
+        }
+    }
+
+    return ni % 2 === 1;
+}
+
+// Highlight the triangle 
+function unHighlightTriangle() {
+    if (selectedTriangle < 0) return;
+
+    const selIndex = 3 + 3 * selectedTriangle;
+    const triangleColor = trianglesColors[selectedTriangle];
+
+    // set triangle color buffer
+    gl.bindBuffer(gl.ARRAY_BUFFER, triangleColorBuffer);
+
+    gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndex - 3), flatten(triangleColor));
+    gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndex - 2), flatten(triangleColor));
+    gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndex - 1), flatten(triangleColor));
+
+    selectedTriangle = -1;
+    isSelected = false;
+}
+
+
+// ----------------------------------------------------------------
+//           Square Utils
+// ----------------------------------------------------------------
+
+// Returns the clicked square
+function getSquare(pos) {
+
+    // Index of square picked
+    var pickedIndex;
+    for (let i = polygons.length - 1; i >= 0; i--) {
+
+        // check if the clicked position is on square
+        const pickReturn = pickSquare(i, pos[0], pos[1]);
+
+        if (pickReturn) {
+            pickedIndex = i;
+            highlightObj(i);
+            console.log("Selected object index: " + pickedIndex);
+            isSelected = true;
+            return pickedIndex;
+        }
+    }
+
+    isSelected = false;
+    return -1;
+}
+
+function updateSquareEdges(selObj, a, b, c, d) {
+    polygons[selObj] = [
+        [a, c],
+        [a, d],
+        [b, c],
+        [b, d]
+    ];
+}
+
+
+// using the picked method learned on the graphic computer classe
+// of prof. dr. Darlan url(???)
+function pickSquare(currentId, x, y) {
+    var ni = 0;
+    var p1, p2; // Edges
+    var p1x, p1y, p2x, p2y;
+    var xc;
+
+    for (let j = 0; j < 4; j++) {
+        p1 = polygons[currentId][j][0];
+        p2 = polygons[currentId][j][1];
+        p1x = p1[0], p1y = p1[1];
+        p2x = p2[0], p2y = p2[1];
+        if (
+            !(p1y == p2y) &&
+            !(p1y > y && p2y > y) &&
+            !(p1y < y && p2y < y) &&
+            !(p1x < x && p2x < x)
+        ) {
+            if (p1y == y) {
+                if (p1x > x && p2y > y) {
+                    ni += 1;
+                }
+            } else if (p2y == y) {
+                if (p2x > x && p1y > y) {
+                    ni += 1;
+                }
+            } else if (p1x > x && p2x > x) {
+                ni += 1;
+            } else {
+                var dx = p1x - p2x;
+                xc = p1x;
+                if (dx != 0.0) {
+                    xc += ((y - p1y) * dx) / (p1y - p2y);
+                }
+                if (xc > x) {
+                    ni += 1;
+                }
+            }
+        }
+    }
+    return ni % 2 === 1;
+}
+
+function highlightObj(selObj) {
+    var selColorIndex;
+
+    selIndex = 4 + 4 * selObj;
+    selColorIndex = colorArray[selObj];
+
+    const originalColor = vec4(highlightedColors[selColorIndex]);
+
+    // set square buffer
+    gl.bindBuffer(gl.ARRAY_BUFFER, polygonColorBuffer);
+
+    gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndex - 4), flatten(originalColor));
+    gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndex - 3), flatten(originalColor));
+    gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndex - 2), flatten(originalColor));
+    gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndex - 1), flatten(originalColor));
+}
+
+function unHighlightSquare() {
+    if (selectedSquare < 0) return;
+
+    const selIndex = 4 + 4 * selectedSquare;
+    const polygonColor = polygonsColors[selectedSquare];
+
+    // set square buffer
+    gl.bindBuffer(gl.ARRAY_BUFFER, polygonColorBuffer);
+
+    gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndex - 4), flatten(polygonColor));
+    gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndex - 3), flatten(polygonColor));
+    gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndex - 2), flatten(polygonColor));
+    gl.bufferSubData(gl.ARRAY_BUFFER, 16 * (selIndex - 1), flatten(polygonColor));
+
+    selectedSquare = -1;
+    isSelected = false;
+}
+
+// ----------------------------------------------------------------
+//          Clear all
+// ----------------------------------------------------------------
+
+function clearAll() {
+
 }
