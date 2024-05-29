@@ -1,26 +1,9 @@
 <!DOCTYPE html>
-<style>
-    .menu {
-        width: 512px;
-        display: flex;
-        align-items: center;
-    }
-
-    .buttons {
-        display: flex;
-        margin-left: auto;
-        margin-right: auto;
-        justify-content: center;
-    }
-
-    .buttons button {
-        margin: 10px;
-    }
-</style>
-
 <html>
-<meta charset=UTF-8>
-<script id="vertex-shader" type="x-shader/x-vertex">
+
+<head>
+    <meta charset=UTF-8>
+    <script id="vertex-shader" type="x-shader/x-vertex">
 attribute vec4 vPosition;
 attribute vec4 vColor;
 
@@ -34,7 +17,7 @@ void main()
 }
 </script>
 
-<script id="point-vertex-shader" type="x-shader/x-vertex">
+    <script id="point-vertex-shader" type="x-shader/x-vertex">
     attribute vec4 vPosition;
     attribute vec4 vColor;
     varying vec4 fColor;
@@ -45,7 +28,7 @@ void main()
     }
     </script>
 
-<script id="line-vertex-shader" type="x-shader/x-vertex">
+    <script id="line-vertex-shader" type="x-shader/x-vertex">
     attribute vec4 vPosition;
     attribute vec4 vColor;
     varying vec4 fColor;
@@ -55,7 +38,7 @@ void main()
     }
     </script>
 
-<script id="triangle-vertex-shader" type="x-shader/x-vertex">
+    <script id="triangle-vertex-shader" type="x-shader/x-vertex">
         attribute vec4 vPosition;
         attribute vec4 vColor;
         varying vec4 fColor;
@@ -65,7 +48,7 @@ void main()
         }
     </script>
 
-<script id="polygon-vertex-shader" type="x-shader/x-vertex">
+    <script id="polygon-vertex-shader" type="x-shader/x-vertex">
         attribute vec4 vPosition;
         attribute vec4 vColor;
         varying vec4 fColor;
@@ -75,7 +58,7 @@ void main()
         }
     </script>
 
-<script id="fragment-shader" type="x-shader/x-fragment">
+    <script id="fragment-shader" type="x-shader/x-fragment">
 
     precision mediump float;
 
@@ -86,10 +69,11 @@ void main()
     }
     </script>
 
-<script type="text/javascript" src="../Common/webgl-utils.js"></script>
-<script type="text/javascript" src="../Common/initShaders.js"></script>
-<script type="text/javascript" src="../Common/MV.js"></script>
-<script type="text/javascript" src="script.js"></script>
+    <script type="text/javascript" src="../Common/webgl-utils.js"></script>
+    <script type="text/javascript" src="../Common/initShaders.js"></script>
+    <script type="text/javascript" src="../Common/MV.js"></script>
+    <script type="text/javascript" src="script.js"></script>
+</head>
 
 <body>
     <div style="display: flex; gap: 15px;">
@@ -134,7 +118,7 @@ void main()
                 <h3 id="object">points</h3>
             </div>
         </div>
-        
+
         <div class="buttons">
 
             <button type="button" id="draw">Draw</button>
