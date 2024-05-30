@@ -271,6 +271,7 @@ window.onload = function init() {
 
         selectedAction = actions.MOVE;
         showMode.innerText = `Moving: `
+        canvas.addEventListener('mouseup', stopTriangleRotation);
     };
 
     rotateButton.onclick = () => {
