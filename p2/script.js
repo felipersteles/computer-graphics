@@ -271,7 +271,10 @@ window.onload = function init() {
 
         selectedAction = actions.MOVE;
         showMode.innerText = `Moving: `
-        canvas.addEventListener('mouseup', stopTriangleRotation);
+        canvas.removeEventListener('mousedown', startTriangleRotation);
+        canvas.removeEventListener('mousemove', rotateTriangleOnMouse);
+        canvas.removeEventListener('mousedown', startPolygonRotation);
+        canvas.removeEventListener('mousemove', rotatePolygonOnMouse);
     };
 
     rotateButton.onclick = () => {
