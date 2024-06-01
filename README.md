@@ -1,6 +1,6 @@
 
 
-<div align="center"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRoiAWpT1lgisOqQNDtKuYgmIRKlAqZjQgW8g&s" width=100% /></div>
+<div align="center"><img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiMcXFSjAYBUubJ-oq_i30FNAXJdu9Q5iw9BFNoSlFxkY0icbspLi3b9Re-gwMxlh7bhlurLvxt81AjbKsCTDV_J9y4z4Lc_Lr_XdGTemj7BC5jAseLZk7hqDrxaaUgP_FHi_hGk8DeQto/s768/%25E2%2580%2598Escola+de+Atenas%25E2%2580%2599%252C+de+Rafael+Sanzio+-+Musei+Vaticani+-+Destaque%252C++Out20.jpg" width=100% /></div>
 
 
 # Computer Graphics with WebGL
