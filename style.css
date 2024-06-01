@@ -120,7 +120,7 @@ h1 {
     /* Add space above and below the section */
 }
 
-.center{
+.center {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -160,22 +160,110 @@ footer {
     padding: 20px 50px;
 }
 
-.buttons{
+.buttons {
     display: flex;
     justify-content: center;
     align-items: right;
 }
 
 
-.flex{
+.flex {
     display: flex;
 }
 
- /*  booooxxxx  */
-.box{
+.star-area {
     display: flex;
     flex-direction: column;
 }
+
+/*  booooxxxx  */
+.box {
+    display: flex;
+    flex-direction: column;
+}
+
+.border-bottom {
+    border-bottom: 1px solid #333;
+}
+
+/* Style the constellation-graph section */
+.constellation-graph {
+    text-align: center;
+    padding: 50px 30px;
+    background-color: #f2f2f2;
+    color: #333;
+}
+
+.constellation-graph h2 {
+    font-size: 1.7rem;
+    margin-bottom: 20px;
+}
+
+.constellation-graph p {
+    font-size: 1.1rem;
+    line-height: 1.5;
+    margin-bottom: 30px;
+}
+
+.comparison {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    /* Allow concepts to wrap on smaller screens */
+}
+
+.concept {
+    width: 40%;
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.concept h3 {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+}
+
+.concept img {
+    width: 100%;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.star-presentation {
+    flex-direction: column;
+}
+
+.references {
+    margin-top: 50px;
+    /* Adjust as needed */
+}
+
+.references ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.references li {
+    margin-bottom: 10px;
+}
+
+.references a {
+    text-decoration: none;
+    color: #333;
+}
+
+.references a:hover {
+    color: #999;
+}
+
+.references h3 {
+    margin-top: 30px;
+    /* Adjust as needed */
+    margin-bottom: 10px;
+}
+
 
 /* Responsiveness for smaller screens */
 
@@ -190,5 +278,9 @@ footer {
     nav {
         margin-top: 10px;
         /* Adds space between logo and nav on small screens */
+    }
+
+    .concept {
+        width: 100%;
     }
 }

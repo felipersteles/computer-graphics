@@ -108,20 +108,73 @@
       </nav>
     </div>
   </header>
-  <section id="home" class="home">
+  <section id="home" class="home border-bottom">
     <h1>You can see the stars in WebGL</h1>
-    <p>todo: put a canvas on the next session and draw the stars.</p>
+    <p>Dive deeper than your wildest dreams and prepare to be dazzled. Here, the wonders of the cosmos unfold before
+      your very eyes. Embark on a celestial voyage, where countless stars, like scattered diamonds, paint the vast
+      canvas of the night sky. Lose yourself in the shimmering expanse, where constellations whisper ancient stories and
+      distant galaxies beckon with mysteries untold. This is your chance to reach for the stars, not with a telescope,
+      but with the power of imagination and the magic of WebGL.</p>
   </section>
-  <section id="stars" class="stars">
-    <div class="flex padding">
-      <canvas id="canvas" width="500" height="500" class="stars"></canvas>
-      <div class="center" style7="margin-left: 50px;">
-
-          <label box="box buttons">Name of the star:</label>
-          <input id="star-name" type="text" />
-          <button id="highlight">Exibir</button>
+  <section class="constellation-graph border-bottom">
+    <h1>Graphs and Constellations</h1>
+    <h2>Where Myth Meets Math</h2>
+    <p>Have you ever gazed upon the night sky and marveled at the constellations? These celestial patterns, like Ursa
+      Major (the Great Bear), have captivated humanity for millennia. But did you know there's a hidden language lurking
+      behind the stars – the language of graphs?</p>
+    <div class="comparison">
+      <div class="concept">
+        <h3>Constellation</h3>
+        <p>A constellation is a sky map, a tapestry woven from starlight. Each star, a gleaming jewel, connected by
+          lines that paint familiar shapes – a bear, a hunter, a crown. These connections are fixed, a timeless story
+          etched across the cosmos.</p>
+      </div>
+      <div class="concept">
+        <h3>Graph</h3>
+        <p>A graph, a web of connections, mirrors the essence of constellations. Stars become nodes, linked by edges
+          that whisper tales of relationships. But unlike constellations, graphs dance with flexibility. Edges can be
+          directed or undirected, weighted or not, reflecting a universe of possibilities.</p>
       </div>
     </div>
+    <p>So, the next time you gaze upon the stars, remember – they're not just points of light, but a gateway to a world
+      of mathematical wonder. Constellations, a glimpse of celestial beauty, and graphs, a powerful tool to map
+      connections – a beautiful union of myth and math.</p>
+  </section>
+  <section id="stars" class="stars">
+    <div class="center links star-presentation">
+      <h1>Constellation</h1>
+      <h2 id="info-constellation"></h2>
+      <p id="desc-constellation"></p>
+    </div>
+    <div>
+    </div>
+    <div class="flex padding">
+      <canvas id="canvas" width="500" height="500" class="stars"></canvas>
+
+      <div class="star-area" style="margin-left: 15px;">
+        <div>
+          <div>
+            <label box="box buttons">Name of the star:</label>
+            <input id="star-name" type="text" />
+          </div>
+
+          <button id="highlight" class="starbtn">Find</button>
+        </div>
+        <div>
+          <p id="description"></p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+  <section class="references padding">
+    <h2>References</h2>
+    <ul>
+      <li>
+        <a href="https://en.wikipedia.org/wiki/Leo_(constellation)" id="ref1-link">Leo Constellation</a>. Wikipedia,
+        2024
+      </li>
+    </ul>
   </section>
   <footer>
     <p class="copyright">© 2024 Felipe Teles. All rights reserved.</p>
