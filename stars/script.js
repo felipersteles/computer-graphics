@@ -128,6 +128,12 @@ class Constellation {
         return starsPositions;
     }
 
+    getStarsName() {
+        const starsName = this.stars.map(star => star.name);
+
+        return starsName;
+    }
+
     drawStars() {
         const starsPositions = this.getStarsPositionArray()
 
@@ -287,12 +293,20 @@ function main() {
     //         Set values
     // ----------------------------------------------------------------
 
+
     leoConstellation.drawStars();
 
     const starName = document.getElementById('star-name');
     const highlightBtn = document.getElementById('highlight');
     const infoConstellation = document.getElementById('info-constellation');
     const descConstellation = document.getElementById('desc-constellation');
+    const starList = document.getElementById('stars-list');
+    starList.innerHTML = `
+    <h4>Leo: </h4>
+    <ul class="flex center" style="margin-left: 2px; gap: 5px;">
+            ${leoConstellation.getStarsName().map(name => {
+        return `<li>${name}</li>`;
+    })}</ul>`;
 
     highlightBtn.onclick = () => {
         if (!starName.value) return;
