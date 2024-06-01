@@ -59,6 +59,10 @@
 
 WebGLUtils = function() {
 
+  const init = () => {
+    view
+  }
+
 /**
  * Creates the HTLM for a failure message
  * @param {string} canvasContainerId id of container of th
@@ -118,6 +122,7 @@ var setupWebGL = function(canvas, opt_attribs) {
   if (!context) {
     showLink(OTHER_PROBLEM);
   }
+
   return context;
 };
 

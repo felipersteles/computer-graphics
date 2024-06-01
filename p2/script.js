@@ -137,6 +137,14 @@ var selectedAction = actions.DRAW;
 
 // Receives event.clientX and event.clientY (pixels) and converts to canvas position.
 function convertXY(x, y) {
+
+    // try it
+    // var boundingBox = canvas.getBoundingClientRect();
+
+    // const x = (x - boundingBox.left) * (cw / boundingBox.width);
+    // const y = (y - boundingBox.top) * (ch / boundingBox.height);
+    // return vec2(x, y);
+
     return vec2(2 * x / canvas.width - 1, 2 * (canvas.height - y) / canvas.height - 1);
 }
 

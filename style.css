@@ -156,6 +156,27 @@ footer {
     color: #333;
 }
 
+.padding {
+    padding: 20px 50px;
+}
+
+.buttons{
+    display: flex;
+    justify-content: center;
+    align-items: right;
+}
+
+
+.flex{
+    display: flex;
+}
+
+ /*  booooxxxx  */
+.box{
+    display: flex;
+    flex-direction: column;
+}
+
 /* Responsiveness for smaller screens */
 
 @media (max-width: 768px) {
