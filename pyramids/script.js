@@ -49,13 +49,13 @@ window.onload = function init() {
     //CUBE Buffers
     cBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, flatten(vertexColors), gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, flatten(scenarioColors), gl.STATIC_DRAW);
 
     vColor = gl.getAttribLocation(program, "vColor");
 
     vBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, flatten(scenario), gl.STATIC_DRAW);
 
     vPosition = gl.getAttribLocation(program, "vPosition");
 
@@ -88,7 +88,7 @@ var render = function () {
 
     gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
     gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
-    gl.drawArrays(gl.TRIANGLES, 0, vertices.length);
+    gl.drawArrays(gl.TRIANGLES, 0, scenario.length);
 
     // Set model-view and projection matrices for pyramid program
     modelViewMatrixLoc = gl.getUniformLocation(program, "modelViewMatrix");
