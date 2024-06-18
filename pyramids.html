@@ -50,7 +50,7 @@
   
       void main() 
       {
-          gl_Position = projectionMatrix*modelViewMatrix*vPosition;
+          gl_Position = projectionMatrix * modelViewMatrix*vPosition;
           fColor = vColor;
       } 
   </script>
@@ -72,6 +72,8 @@
   <script type="text/javascript" src="./Common/initShaders.js"></script>
   <script type="text/javascript" src="./Common/MV.js"></script>
   <script type="text/javascript" src="./pyramids/script.js"></script>
+  <script type="text/javascript" src="./pyramids/arrays.js"></script>
+  <script type="text/javascript" src="./pyramids/camera.js"></script>
 </head>
 
 <body style="margin: 0px">
@@ -80,14 +82,8 @@
       <canvas id="canvas" width="500" height="500" class="pyramids"></canvas>
     </div>
     <div class="btn-area">
-      <button id="Button1">1</button>
-      <button id="Button2">2</button>
-      <button id="Button3">3</button>
-      <button id="Button4">4</button>
-      <button id="Button5">5</button>
-      <button id="Button6">6</button>
-      <button id="Button7">7</button>
-      <button id="Button8">8</button>
+      <label for="cam-theta">Cam height:</label>
+      <input id="cam-theta" type="range">
     </div>
   </section>
   <footer>

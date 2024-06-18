@@ -1,76 +1,18 @@
 var canvas;
 var gl;
 
-var NumVertices = 12;
-
-// 1 -> vec4(-0.5, -1, -0.5, 1.0)
-// 2 -> vec4(-0.5, -1, 0.5, 1.0)
-// 3 -> vec4(0.5, -1, -0.5, 1.0)
-// 4 -> vec4(0.5, -1, 0.5, 1.0)
-// 5 -> vec4(0, 0, 0, 1.0)
-
-var vertices = [
-    // front face
-    vec4(0.5, -1, -0.5, 1.0),//1
-    vec4(-0.5, -1, -0.5, 1.0),//2
-    vec4(0.0, 0.0, 0.0, 1.0),//5
-    // right face
-    vec4(-0.5, -1, 0.5, 1.0),//3
-    vec4(0.5, -1, 0.5, 1.0),//4
-    vec4(0, 0, 0, 1.0),//5
-    // left face
-    vec4(-0.5, -1, -0.5, 1.0),//2
-    vec4(-0.5, -1, 0.5, 1.0),//3
-    vec4(0, 0, 0, 1.0),//5
-    // back face
-    vec4(0.5, -1, 0.5, 1.0),//4
-    vec4(0.5, -1, -0.5, 1.0),//1
-    vec4(0, 0, 0, 1.0),//5
-    // base
-    vec4(-0.5, -1, -0.5, 1.0),//1
-    vec4(-0.5, -1, 0.5, 1.0),//2
-    vec4(0.5, -1, -0.5, 1.0),//5
-    vec4(-0.5, -1, 0.5, 1.0),//4
-    vec4(0.5, -1, -0.5, 1.0),//1
-    vec4(0.5, -1, 0.5, 1.0),//5
-];
-
-var vertexColors = [
-    vec4(0.0, 1.0, 0.0, 1.0),  // green
-    vec4(0.0, 1.0, 0.0, 1.0),  // red
-    vec4(0.0, 1.0, 0.0, 1.0),  // red
-    vec4(1.0, 1.0, 0.0, 1.0),  // red
-    vec4(1.0, 1.0, 0.0, 1.0),  // red
-    vec4(1.0, 1.0, 0.0, 1.0),  // red
-    vec4(1.0, 0.0, 0.0, 1.0),  // red
-    vec4(1.0, 0.0, 0.0, 1.0),  // red
-    vec4(1.0, 0.0, 0.0, 1.0),  // red
-    vec4(0.0, 0.0, 1.0, 1.0),  // red
-    vec4(0.0, 0.0, 1.0, 1.0),  // red
-    vec4(0.0, 0.0, 1.0, 1.0),  // red
-    vec4(0.0, 1.0, 1.0, 1.0),  // red
-    vec4(0.0, 1.0, 1.0, 1.0),  // red
-    vec4(0.0, 1.0, 1.0, 1.0),  // red
-    vec4(0.0, 1.0, 1.0, 1.0),  // red
-    vec4(0.0, 1.0, 1.0, 1.0),  // red
-    vec4(0.0, 1.0, 1.0, 1.0),  // red
-];
-
 var near = 0.3;
 var far = 10.0;
 var radius = 4.0;
-var theta = 0.0;
+var theta = 5;
 var phi = 0.0;
 var dr = 5.0 * Math.PI / 180.0;
 
-var fovy = 90.0;  // Field-of-view in Y direction angle (in degrees)
-var aspect;       // Viewport aspect ratio
-
 var modelViewMatrix, projectionMatrix;
 var modelViewMatrixLoc, projectionMatrixLoc;
-var eye;
-const at = vec3(0.0, 0.0, 0.0);
-const up = vec3(0.0, 1.0, 0.0);
+
+var camera;
+var aspect;
 
 var program;
 var program_originline;
@@ -117,59 +59,10 @@ window.onload = function init() {
 
     vPosition = gl.getAttribLocation(program, "vPosition");
 
-    //Static Line
-    var l_vertices = [
-        vec4(0.0, 0.0, 0.0, 1.0),
-        vec4(5.0, 0.0, 0.0, 1.0),
-        vec4(0.0, 0.0, 0.0, 1.0),
-        vec4(0.0, 5.0, 0.0, 1.0),
-        vec4(0.0, 0.0, 0.0, 1.0),
-        vec4(0.0, 0.0, 5.0, 1.0),
-        vec4(0.0, 0.0, 0.0, 1.0),
-        vec4(-5.0, 0.0, 0.0, 1.0),
-        vec4(0.0, 0.0, 0.0, 1.0),
-        vec4(0.0, -5.0, 0.0, 1.0),
-        vec4(0.0, 0.0, 0.0, 1.0),
-        vec4(0.0, 0.0, -5.0, 1.0),
-    ];
-    // Load the data into the GPU
-    l_vBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, l_vBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, flatten(l_vertices), gl.STATIC_DRAW);
-    // Associate out shader variables with our data buffer
-    l_vPosition = gl.getAttribLocation(program_originline, "vPosition");
-
-
-    var l_colors = [
-        vec4(1.0, 1.0, 0.0, 1.0),
-        vec4(1.0, 1.0, 0.0, 1.0),
-        vec4(1.0, 1.0, 0.0, 1.0),
-        vec4(1.0, 1.0, 0.0, 1.0),
-        vec4(1.0, 1.0, 0.0, 1.0),
-        vec4(1.0, 1.0, 0.0, 1.0),
-
-        vec4(0.0, 0.0, 1.0, 1.0),
-        vec4(0.0, 0.0, 1.0, 1.0),
-        vec4(0.0, 0.0, 1.0, 1.0),
-        vec4(0.0, 0.0, 1.0, 1.0),
-        vec4(0.0, 0.0, 1.0, 1.0),
-        vec4(0.0, 0.0, 1.0, 1.0),
-    ];
-    l_cBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, l_cBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, flatten(l_colors), gl.STATIC_DRAW);
-
-    l_vColor = gl.getAttribLocation(program_originline, "vColor");
-
-    // buttons for viewing parameters
-    document.getElementById("Button1").onclick = function () { near *= 1.1; far *= 1.1; };
-    document.getElementById("Button2").onclick = function () { near *= 0.9; far *= 0.9; };
-    document.getElementById("Button3").onclick = function () { radius *= 2.0; };
-    document.getElementById("Button4").onclick = function () { radius *= 0.5; };
-    document.getElementById("Button5").onclick = function () { theta += dr; };
-    document.getElementById("Button6").onclick = function () { theta -= dr; };
-    document.getElementById("Button7").onclick = function () { phi += dr; };
-    document.getElementById("Button8").onclick = function () { phi -= dr; };
+    const changeCamTheta = document.getElementById("cam-theta")
+    changeCamTheta.addEventListener("input", function (event) {
+        camera.setTheta(event.target.value / 10);
+    })
 
     render();
 }
@@ -177,27 +70,13 @@ window.onload = function init() {
 var render = function () {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    eye = vec3(radius * Math.sin(theta) * Math.cos(phi),
-        radius * Math.sin(theta) * Math.sin(phi), radius * Math.cos(theta));
 
-    modelViewMatrix = lookAt(eye, at, up);
-    projectionMatrix = perspective(fovy, aspect, near, far);
+    if (!camera) {
+        camera = new Camera(aspect, radius, theta, phi, near, far);
+    }
 
-    //LINE PROGRAM
-    gl.useProgram(program_originline);
-    gl.enableVertexAttribArray(l_vPosition);
-    gl.bindBuffer(gl.ARRAY_BUFFER, l_vBuffer);
-    gl.vertexAttribPointer(l_vPosition, 4, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(l_vColor);
-    gl.bindBuffer(gl.ARRAY_BUFFER, l_cBuffer);
-    gl.vertexAttribPointer(l_vColor, 4, gl.FLOAT, false, 0, 0);
-
-    gl.drawArrays(gl.LINES, 0, 12);
-
-    modelViewMatrixLoc = gl.getUniformLocation(program_originline, "modelViewMatrix");
-    projectionMatrixLoc = gl.getUniformLocation(program_originline, "projectionMatrix");
-    gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(modelViewMatrix));
-    gl.uniformMatrix4fv(projectionMatrixLoc, false, flatten(projectionMatrix));
+    modelViewMatrix = camera.getModelViewMatrix();
+    projectionMatrix = camera.getProjectionMatrix();
 
     //PYRAMID PROGRAM
     gl.useProgram(program);
@@ -217,11 +96,7 @@ var render = function () {
     gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(modelViewMatrix));
     gl.uniformMatrix4fv(projectionMatrixLoc, false, flatten(projectionMatrix));
 
-    // Update theta for next frame (replace with time-based update)
-    theta += 0.01; // Adjust for desired rotation speed
-    if (theta > 2 * Math.PI) {
-        theta -= 2 * Math.PI; // Reset theta to keep it within 0 to 2*PI range
-    }
+    // camera.spin(0.05)
 
     requestAnimFrame(render);
 }
