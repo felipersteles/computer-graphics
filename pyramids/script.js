@@ -16,6 +16,7 @@ var ambientLight, diffuseLight, specularLight;
 var kaLoc, kdLoc, ksLoc;
 
 var camera;
+var camX = 0, camY = 0, camZ = 0;
 var aspect;
 var lights;
 
@@ -87,6 +88,21 @@ window.onload = function init() {
         camera.setTheta(event.target.value / 10);
     })
 
+    const changeCamPhi = document.getElementById("cam-phi")
+    changeCamPhi.addEventListener("input", function (event) {
+        camera.setPhi(event.target.value * (Math.PI / 100));
+    })
+
+    const changeCamY = document.getElementById("cam-y")
+    changeCamY.addEventListener("input", function (event) {
+        camera.setLookAtY((event.target.value - 50) / 10);
+    })
+
+    const changeCamZ = document.getElementById("cam-z")
+    changeCamZ.addEventListener("input", function (event) {
+        camera.setLookAtZ((event.target.value - 50) / 10);
+    })
+
     render();
 }
 
@@ -118,7 +134,7 @@ var render = function () {
     gl.drawArrays(gl.TRIANGLES, 0, scenario.length);
 
     gl.vertexAttribPointer(2, 3, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(vNormal);        
+    gl.enableVertexAttribArray(vNormal);
 
     // Set model-view and projection matrices for pyramid program
     modelViewMatrixLoc = gl.getUniformLocation(program, "modelViewMatrix");
@@ -153,7 +169,7 @@ var render = function () {
     gl.uniform1f(kdLoc, 0.7);
     gl.uniform1f(kdLoc, 1.0);
 
-    camera.spin(0.01);
+    // camera.spin(0.01);
 
     requestAnimFrame(render);
 }

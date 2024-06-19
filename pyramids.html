@@ -127,13 +127,31 @@
 </head>
 
 <body style="margin: 0px">
-  <section id="stars" class="stars">
+  <section id="pyramid" class="pyramid">
     <div>
       <canvas id="canvas" width="500" height="500" class="pyramids"></canvas>
     </div>
-    <div class="btn-area">
-      <label for="cam-theta">Cam height:</label>
-      <input id="cam-theta" type="range">
+    <div class="column">
+      <div class="cam center">
+        <label for="cam-theta">Cam theta:</label>
+        <input id="cam-theta" type="range">
+      </div>
+      <div class="cam center">
+        <label for="cam-phi">Cam phi:</label>
+        <input id="cam-phi" type="range" value="0">
+      </div>
+      <div class="cam center">
+        <label for="cam-x">Cam X:</label>
+        <input id="cam-x" type="range" />
+      </div>
+      <div class="cam center">
+        <label for="cam-y">Cam Y:</label>
+        <input id="cam-y" type="range">
+      </div>
+      <div class="cam center">
+        <label for="cam-z">Cam Z:</label>
+        <input id="cam-z" type="range">
+      </div>
     </div>
   </section>
   <footer>

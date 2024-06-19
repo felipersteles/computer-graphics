@@ -268,6 +268,20 @@ footer {
     margin: 0;
 }
 
+.pyramid{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.column{
+    flex-direction: column;
+}
+
+.cam{
+    justify-content: space-between;
+    gap: 3px;
+}
 
 /* Responsiveness for smaller screens */
 
