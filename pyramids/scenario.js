@@ -84,10 +84,12 @@ const oasisColor = [
 // sun
 const sun = getSphere().vertices;
 const sunColor = sun.map(() => vec4(1, 1, 1, 1));
+const sunNormals = getSphere().normals;
 
 // diamond
 const diamond = getDiamond([0, -1, -3], 0.8).vertices;
 const diamondColor = diamond.map(() => vec4(0.3, 0, 1, 1));
+const diamondNormals = getDiamond([0, -1, -3], 0.8).normals;
 
 // scenario arrays
 const scenario = [
@@ -251,3 +253,8 @@ const scenarioColors = [
     ...sunColor,
     ...diamondColor
 ];
+
+const normals = [
+    ...sunNormals,
+    ...diamondNormals
+]
