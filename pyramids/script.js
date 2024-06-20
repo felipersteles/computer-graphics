@@ -19,6 +19,8 @@ var camera;
 var camX = 0, camY = 0, camZ = 0;
 var aspect;
 var lights;
+var lastValueX = 50, lastValueY = 50, lastValueZ = 50;
+var lastRValueX = 50, lastRValueY = 50;
 
 // Scenario program and its properties
 var program;
@@ -68,39 +70,76 @@ window.onload = function init() {
     cBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, flatten(scenarioColors), gl.STATIC_DRAW);
-
     vColor = gl.getAttribLocation(program, "vColor");
 
     vBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, flatten(scenario), gl.STATIC_DRAW);
-
     vPosition = gl.getAttribLocation(program, "vPosition");
 
     nBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, nBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, flatten(normals), gl.STATIC_DRAW);
-
     vNormal = gl.getAttribLocation(program, "vNormal");
 
     const changeCamTheta = document.getElementById("cam-theta")
     changeCamTheta.addEventListener("input", function (event) {
-        camera.setTheta(event.target.value / 10);
+        const { value } = event.target;
+
+        if (value > lastRValueX)
+            camera.lookUp(value / 10);
+        else
+            camera.lookDown(value / 10);
+
+        lastRValueX = value;
     })
 
     const changeCamPhi = document.getElementById("cam-phi")
     changeCamPhi.addEventListener("input", function (event) {
-        camera.setPhi(event.target.value * (Math.PI / 100));
+        const { value } = event.target;
+
+        if (value > lastRValueY)
+            camera.lookRight(value / 10);
+        else
+            camera.lookLeft(value / 10);
+
+            lastRValueY = value;
+    })
+
+    const changeCamX = document.getElementById("cam-x")
+    changeCamX.addEventListener("input", function (event) {
+        const { value } = event.target;
+
+        if (value > lastValueX)
+            camera.moveForward(value / 100);
+        else
+            camera.moveBackward(value / 100);
+
+        lastValueX = value;
     })
 
     const changeCamY = document.getElementById("cam-y")
     changeCamY.addEventListener("input", function (event) {
-        camera.setLookAtY((event.target.value - 50) / 10);
+        const { value } = event.target;
+
+        if (value > lastValueY)
+            camera.moveUp(value / 100);
+        else
+            camera.moveDown(value / 100);
+
+        lastValueY = value;
     })
 
     const changeCamZ = document.getElementById("cam-z")
     changeCamZ.addEventListener("input", function (event) {
-        camera.setLookAtZ((event.target.value - 50) / 10);
+        const { value } = event.target;
+
+        if (value > lastValueZ)
+            camera.moveRight(value / 100);
+        else
+            camera.moveLeft(value / 100);
+
+        lastValueZ = value;
     })
 
     render();
@@ -123,18 +162,19 @@ var render = function () {
 
     //PYRAMID PROGRAM
     gl.useProgram(program);
-    gl.enableVertexAttribArray(vPosition);
     gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
-
+    gl.enableVertexAttribArray(vPosition);
     gl.vertexAttribPointer(vPosition, 4, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(vColor);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
+    gl.enableVertexAttribArray(vColor);
     gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
-    gl.drawArrays(gl.TRIANGLES, 0, scenario.length);
 
-    gl.vertexAttribPointer(2, 3, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, nBuffer);
     gl.enableVertexAttribArray(vNormal);
+    gl.vertexAttribPointer(vNormal, 3, gl.FLOAT, false, 0, 0);
+
+    gl.drawArrays(gl.TRIANGLES, 0, scenario.length);
 
     // Set model-view and projection matrices for pyramid program
     modelViewMatrixLoc = gl.getUniformLocation(program, "modelViewMatrix");

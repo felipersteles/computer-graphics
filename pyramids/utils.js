@@ -1,50 +1,50 @@
+function subtractVectors(vec1, vec2) {
+  // Assumes vec1 and vec2 have the same dimensions (e.g., both vec3)
+  const result = [];
+  for (let i = 0; i < vec1.length; i++) {
+    result.push(vec1[i] - vec2[i]);
+  }
 
-const groundHeight = -1;
-
-// create the buildings
-const getBuildings = (numBuildings = 5) => {
-    let buildings = []
-    const size = 0.5
-
-
-    for (let i = 0; i < numBuildings; i++) {
-        for (let j = 0; j < numBuildings; j += 1) {
-            // first face
-            const A = vec4(-2.3 - i + j, groundHeight, 2 + i + j, 1.0);
-            const B = vec4(A[0] + size, groundHeight, A[2] + size, 1.0);
-            const C = vec4(A[0], groundHeight, B[2], 1.0);
-            const D = vec4(B[0], groundHeight, A[2], 1.0);
-
-            const height = getRandomNumber(0.5, 1.5);
-
-            // last face
-            const A1 = vec4(A[0], height, A[2], 1.0);
-            const B1 = vec4(B[0], height, B[2], 1.0);
-            const C1 = vec4(C[0], height, C[2], 1.0);
-            const D1 = vec4(D[0], height, D[2], 1.0);
-
-            // add the triangles to buildings array
-            buildings.push(
-                A, B, C,
-                A, B, D,
-                A1, B1, C1,
-                A1, B1, D1,
-                A, C, C1,
-                A, C1, A1,
-                B, C, C1,
-                B, C1, B1,
-                D, B, B1,
-                D, D1, B1,
-                A, A1, D1,
-                A, D, D1
-            )
-        }
-    }
-
-    return buildings;
+  return result;
 }
 
-// get a random value between max and min
-const getRandomNumber = (min, max) => {
-    return Math.random() * (max - min) + min
+function addVectors(vec1, vec2) {
+  // Assumes vec1 and vec2 have the same dimensions (e.g., both vec3)
+  const result = [];
+  for (let i = 0; i < vec1.length; i++) {
+    result.push(vec1[i] + vec2[i]);
+  }
+
+  return result;
+}
+
+function scaleVector(vec, scale) {
+  // Assumes vec is a vector and scale is a number
+  const result = [];
+
+  for (let i = 0; i < vec.length; i++) {
+    result.push(vec[i] * scale);
+  }
+
+  return result;
+}
+
+function multiplyMatrixVector(matrix, array) {
+
+  if(matrix[0].length != array.length) {
+    console.log("error: matrix length is not equal to length of array");
+    return;
+  }
+  
+  var result = [];
+
+  for(var i = 0; i < matrix.length; i++) {
+    var sum = 0;
+    for(var j = 0; j < array.length; j++) {
+      sum += matrix[i][j] * array[j];
+    }
+    result.push(sum);
+  }
+
+  return result;
 }

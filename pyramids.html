@@ -87,7 +87,7 @@
 
     void main()
     {
-        float glossyness = 20.0;
+        float glossyness = 1.0;
 
         vec3 cameraDirection = normalize(-fPosition.xyz);
         vec3 normalDirection = normalize(fNormal);
@@ -119,6 +119,7 @@
   <script type="text/javascript" src="./Common/initShaders.js"></script>
   <script type="text/javascript" src="./Common/MV.js"></script>
   <script type="text/javascript" src="./pyramids/sphere.js"></script>
+  <script type="text/javascript" src="./pyramids/objects.js"></script>
   <script type="text/javascript" src="./pyramids/utils.js"></script>
   <script type="text/javascript" src="./pyramids/scenario.js"></script>
   <script type="text/javascript" src="./pyramids/camera.js"></script>
@@ -127,32 +128,90 @@
 </head>
 
 <body style="margin: 0px">
-  <section id="pyramid" class="pyramid">
+  <header>
+    <div class="container">
+      <a href="#" class="logo">Computer Graphics</a>
+      <nav>
+        <ul>
+          <li><a href="./index.html">Home</a></li>
+          <li><a href="./draw.html">Draw mode</a></li>
+          <li><a href="#applications">Applications</a></li>
+          <li>
+            <a target="_blank" href="https://github.com/felipersteles/computer-graphics">See the code (external
+              link)</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <section id="home" class="home border-bottom">
+
+    <h1>WebGL Pyramids</h1>
+    <p>
+      Journey through the vast deserts of ancient Egypt and explore the iconic pyramids rendered in WebGL. These
+      monumental structures, built thousands of years ago, continue to captivate us with their architectural ingenuity
+      and serve as a testament to the rich history and advancements of early civilizations. Witness these wonders come
+      alive in 3D, allowing you to rotate and view them from any angle.
+    </p>
+  </section>
+  <section id="pyramid" class="padding pyramid">
     <div>
       <canvas id="canvas" width="500" height="500" class="pyramids"></canvas>
     </div>
     <div class="column">
-      <div class="cam center">
-        <label for="cam-theta">Cam theta:</label>
-        <input id="cam-theta" type="range">
+      <h3>POS</h3>
+      <div class="column">
+        <div class="cam center">
+          <label for="cam-x">Cam X:</label>
+          <input id="cam-x" type="range" />
+        </div>
+        <div class="cam center">
+          <label for="cam-y">Cam Y:</label>
+          <input id="cam-y" type="range">
+        </div>
+        <div class="cam center">
+          <label for="cam-z">Cam Z:</label>
+          <input id="cam-z" type="range">
+        </div>
       </div>
-      <div class="cam center">
-        <label for="cam-phi">Cam phi:</label>
-        <input id="cam-phi" type="range" value="0">
-      </div>
-      <div class="cam center">
-        <label for="cam-x">Cam X:</label>
-        <input id="cam-x" type="range" />
-      </div>
-      <div class="cam center">
-        <label for="cam-y">Cam Y:</label>
-        <input id="cam-y" type="range">
-      </div>
-      <div class="cam center">
-        <label for="cam-z">Cam Z:</label>
-        <input id="cam-z" type="range">
+      <h3>POV</h3>
+      <div>
+        <div class="cam center">
+          <label for="cam-theta">Cam Y:</label>
+          <input id="cam-theta" type="range">
+        </div>
+        <div class="cam center">
+          <label for="cam-phi">Cam X:</label>
+          <input id="cam-phi" type="range">
+        </div>
       </div>
     </div>
+  </section>
+  <section>
+    <h1>Normal</h1>
+    <p>Normals are called that from the Latin word norma, a carpenter's square. Just as a carpenter's square has a right
+      angle, normals are at a right angle to a line or surface. In 3D graphics a normal is the word for a unit vector
+      that describes the direction a surface is facing.</p>
+  </section>
+  <section class="references padding">
+    <h2>References</h2>
+    <ul>
+      <li>
+        <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Lighting_in_WebGL"
+          id="ref1-link">Lighting</a>. mdn,
+        2024
+      </li>
+      <li>
+        <a href="https://en.wikipedia.org/wiki/Phong_shading" id="ref1-link">Phong shading</a>. Wikipedia,
+        2024
+      </li>
+      <li>
+        <a href="https://webglfundamentals.org/webgl/lessons/webgl-3d-lighting-directional.html"
+          id="ref1-link">Normals</a>. Wegbl,
+        2024
+      </li>
+    </ul>
   </section>
   <footer>
     <p class="copyright">© 2024 Felipe Teles. All rights reserved.</p>
