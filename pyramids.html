@@ -135,10 +135,10 @@
         <ul>
           <li><a href="./index.html">Home</a></li>
           <li><a href="./draw.html">Draw mode</a></li>
-          <li><a href="#applications">Applications</a></li>
+          <li><a href="./stars.html">Stars</a></li>
+          <li><a href="#applications">Lighting</a></li>
           <li>
-            <a target="_blank" href="https://github.com/felipersteles/computer-graphics">See the code (external
-              link)</a>
+            <a target="_blank" href="https://github.com/felipersteles/computer-graphics/blob/main/pyramids.html">Source code</a>
           </li>
         </ul>
       </nav>
@@ -155,11 +155,13 @@
       alive in 3D, allowing you to rotate and view them from any angle.
     </p>
   </section>
+
   <section id="pyramid" class="padding pyramid">
     <div>
       <canvas id="canvas" width="500" height="500" class="pyramids"></canvas>
     </div>
-    <div class="column">
+    <div class="column center">
+      <h2>Control the camera</h2>
       <h3>POS</h3>
       <div class="column">
         <div class="cam center">
@@ -188,12 +190,33 @@
       </div>
     </div>
   </section>
-  <section>
-    <h1>Normal</h1>
-    <p>Normals are called that from the Latin word norma, a carpenter's square. Just as a carpenter's square has a right
+
+  <section id="applications" class="more-applications">
+    <div class="center">
+      <h1>Lighting</h1>
+    </div>
+
+    <h3>Normal</h3>
+    <p>
+      Normals are called that from the Latin word norma, a carpenter's square. Just as a carpenter's square has a right
       angle, normals are at a right angle to a line or surface. In 3D graphics a normal is the word for a unit vector
-      that describes the direction a surface is facing.</p>
+      that describes the direction a surface is facing. In the world of WebGL, normals play a crucial role in bringing
+      your 3D scenes to life. Imagine a perfectly smooth beach ball; every point on its surface faces directly outwards.
+      That outward direction is what a normal defines – a tiny arrow perpendicular to the surface at each point. By
+      understanding these normals, WebGL calculates how light interacts with your objects. Surfaces facing the light
+      source will be brighter, while those facing away will be in shadow. This allows for realistic shading effects,
+      creating smooth curves and depth in your models. Without normals, your 3D objects would appear flat and lifeless –
+      normals are the secret sauce that injects realism and visual appeal into your WebGL creations!
+    </p>
+
+    <h3>Phong Model Illumination</h3>
+    <p>Witness realistic lighting effects in your WebGL creations with the Phong illumination model! This powerful
+      shading technique simulates how light interacts with 3D objects, creating highlights, shadows, and reflections. By
+      factoring in ambient light, diffuse reflection, and specular highlights, Phong shading brings depth and realism to
+      your models. Imagine sunlight glinting off a chrome object, or a warm glow emanating from a lamp – WebGL and Phong
+      illumination make these effects a reality within your web browser.</p>
   </section>
+
   <section class="references padding">
     <h2>References</h2>
     <ul>
@@ -213,10 +236,11 @@
       </li>
     </ul>
   </section>
+
+
   <footer>
-    <p class="copyright">© 2024 Felipe Teles. All rights reserved.</p>
-    <a href="https://satelestes.netlify.app/">See saTelestes</a>
-  </footer>
+    <p class="copyright">© 2024 <a href="https://github.com/felipersteles">Felipe Teles</a>. All rights reserved.</p>
+</footer>
 </body>
 
 </html>
