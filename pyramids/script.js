@@ -142,6 +142,49 @@ window.onload = function init() {
         lastValueZ = value;
     })
 
+    const changeCamFOV = document.getElementById("cam-fov")
+    changeCamFOV.addEventListener("change", function (event) {
+        const { value } = event.target;
+
+        camera.setFOV(value);
+    })
+
+    const controlAmbientLightPower = document.getElementById("aLight")
+    controlAmbientLightPower.addEventListener("click", function (event) {
+        const value = event.target.checked;
+        lights.lightPower(value, lightType.AMBIENT)
+    })
+
+    const controlDiffuseLightPower = document.getElementById("dLight")
+    controlDiffuseLightPower.addEventListener("click", function (event) {
+        const value = event.target.checked;
+        lights.lightPower(value, lightType.DIFFUSE)
+    })
+
+    const controlSpecularLightPower = document.getElementById("sLight")
+    controlSpecularLightPower.addEventListener("click", function (event) {
+        const value = event.target.checked;
+        lights.lightPower(value, lightType.SPECULAR)
+    })
+
+    const controlAmbientLight = document.getElementById("aLightCoefficient")
+    controlAmbientLight.addEventListener("change", (event)=>{
+        const { value } = event.target;
+        lights.lightIntensity(value / 100, lightType.AMBIENT)
+    })
+
+    const controlDiffuseLight = document.getElementById("aLightCoefficient")
+    controlDiffuseLight.addEventListener("change", (event)=>{
+        const { value } = event.target;
+        lights.lightIntensity(value / 100, lightType.DIFFUSE)
+    })
+
+    const controlSpecularLight = document.getElementById("aLightCoefficient")
+    controlSpecularLight.addEventListener("change", (event)=>{
+        const { value } = event.target;
+        lights.lightIntensity(value / 100, lightType.SPECULAR)
+    })
+
     render();
 }
 
@@ -201,13 +244,13 @@ var render = function () {
     // Set ambient light (optional)
     gl.uniform4fv(ambientLightColorLoc, flatten(lights.ambientLight)); // Dim white ambient light
 
-    gl.uniform1i(ambientLight, true); // Enable ambient light
-    gl.uniform1i(diffuseLight, true); // Enable diffuse light
-    gl.uniform1i(specularLight, true); // Enable specular light
+    gl.uniform1i(ambientLight, lights.aLight); // Enable ambient light
+    gl.uniform1i(diffuseLight, lights.dLight); // Enable diffuse light
+    gl.uniform1i(specularLight, lights.sLight); // Enable specular light
 
-    gl.uniform1f(kaLoc, 0.2);
-    gl.uniform1f(kdLoc, 0.7);
-    gl.uniform1f(kdLoc, 1.0);
+    gl.uniform1f(kaLoc, lights.ambientLightCoefficient);
+    gl.uniform1f(kdLoc, lights.diffuseLightCoefficient);
+    gl.uniform1f(ksLoc, lights.specularLightCoefficient);
 
     // camera.spin(0.01);
 

@@ -100,6 +100,10 @@ class Camera {
         this.lookRight(-deltaAngle);
     }
 
+    setFOV(value){
+        this.fovY = value;
+    }
+
     getModelViewMatrix() {
         return lookAt(this.eye, this.at, this.up);
     }

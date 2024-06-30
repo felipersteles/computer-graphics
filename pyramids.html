@@ -188,6 +188,43 @@
           <label for="cam-phi">Cam X:</label>
           <input id="cam-phi" type="range">
         </div>
+        <div class="cam center">
+          <label for="cam-fov">FOV</label>
+          <input id="cam-fov" type="number" value="90">
+        </div>
+      </div>
+    </div>
+    <div class="column center">
+      <h2>Control the lighting</h2>
+      <h3>Power</h3>
+      <div class="column">
+        <div class="cam center">
+          <label for="aLight">Ambient Light</label>
+          <input id="aLight" type="checkbox" checked="true">
+        </div>
+        <div class="cam center">
+          <label for="dLight">Diffuse Light</label>
+          <input id="dLight" type="checkbox" checked="true">
+        </div>
+        <div class="cam center">
+          <label for="sLight">Specular Light</label>
+          <input id="sLight" type="checkbox" checked="true"/>
+        </div>
+      </div>
+      <h3>Intensity</h3>
+      <div>
+        <div class="cam center column">
+          <label for="aLightCoefficient">Ambient Light Coefficient</label>
+          <input id="aLightCoefficient" type="number" value="30">
+        </div>
+        <div class="cam center column">
+          <label for="dLightCoefficient">Diffuse Light Coefficient</label>
+          <input id="dLightCoefficient" type="number" value="70">
+        </div>
+        <div class="cam center column">
+          <label for="sLightCoefficient">Specular Light Coefficient</label>
+          <input id="sLightCoefficient" type="number" value="100">
+        </div>
       </div>
     </div>
   </section>
