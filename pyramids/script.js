@@ -103,7 +103,7 @@ window.onload = function init() {
         else
             camera.lookLeft(value / 10);
 
-            lastRValueY = value;
+        lastRValueY = value;
     })
 
     const changeCamX = document.getElementById("cam-x")
@@ -135,9 +135,9 @@ window.onload = function init() {
         const { value } = event.target;
 
         if (value > lastValueZ)
-            camera.moveRight(value / 100);
-        else
             camera.moveLeft(value / 100);
+        else
+            camera.moveRight(value / 100);
 
         lastValueZ = value;
     })
@@ -168,19 +168,19 @@ window.onload = function init() {
     })
 
     const controlAmbientLight = document.getElementById("aLightCoefficient")
-    controlAmbientLight.addEventListener("change", (event)=>{
+    controlAmbientLight.addEventListener("change", (event) => {
         const { value } = event.target;
         lights.lightIntensity(value / 100, lightType.AMBIENT)
     })
 
     const controlDiffuseLight = document.getElementById("aLightCoefficient")
-    controlDiffuseLight.addEventListener("change", (event)=>{
+    controlDiffuseLight.addEventListener("change", (event) => {
         const { value } = event.target;
         lights.lightIntensity(value / 100, lightType.DIFFUSE)
     })
 
     const controlSpecularLight = document.getElementById("aLightCoefficient")
-    controlSpecularLight.addEventListener("change", (event)=>{
+    controlSpecularLight.addEventListener("change", (event) => {
         const { value } = event.target;
         lights.lightIntensity(value / 100, lightType.SPECULAR)
     })
