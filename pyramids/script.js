@@ -128,10 +128,10 @@ window.onload = function init() {
             case "d":
                 camera.moveRight(speed);
                 break;
-            case "space":
+            case "e":
                 camera.moveUp(speed);
                 break;
-            case "shift":
+            case "q":
                 camera.moveDown(speed);
                 break;
                 
