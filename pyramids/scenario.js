@@ -1,17 +1,12 @@
 
-
-
-
+// get objects
 const ground = getGround();
 const pyramids = getPyramids();
 const buildings = getBuildings();
+const oasis = getOasis();
+const sun = getSun();
 
-// // oasis
-// const waterHeight = groundHeight + 0.05;
-// const waterA = vec4(1.5, waterHeight, -1.3, 1.0);
-// const waterB = vec4(2.1, waterHeight, -1.9, 1.0);
-// const waterC = vec4(2.1, waterHeight, -1.3, 1.0);
-// const waterD = vec4(1.5, waterHeight, -1.9, 1.0);
+// oasis
 
 // const treeA1 = vec4(2.3, groundHeight, -2, 1.0);
 // const treeB1 = vec4(2.8, groundHeight, -1.8, 1.0);
@@ -27,10 +22,7 @@ const buildings = getBuildings();
 // const leafEnd = vec4((treeA2[0] + treeC2[0]) / 2, treeHeight - 0.1, -1.5, 1.0);
 // const leaf = [treeA2, treeC2, leafEnd]
 
-// const water = [
-//     waterA, waterB, waterC,
-//     waterA, waterB, waterD
-// ]
+
 // const tree = [
 //     treeA1, treeB1, treeC1,
 //     treeA1, treeB1, treeD1,
@@ -45,24 +37,13 @@ const buildings = getBuildings();
 //     treeA1, treeA2, treeC2,
 //     treeA1, treeC1, treeC2,
 // ]
-// const oasis = [
-//     ...water,
-//     ...tree,
-//     ...leaf
-// ]
+
 // const oasisColor = [
 //     ...water.map(() => vec4(0, 0, 1, 1)),
 //     ...tree.map(() => vec4(0.65, 0.30, 0, 1.0)),
 //     ...leaf.map(() => vec4(0, 1, 0, 1))
 // ]
 
-// sun
-const sun = getSun();
-
-// // diamond
-// const diamond = getDiamond([0, -1, -3], 0.8).vertices;
-// const diamondColor = diamond.map(() => vec4(0.3, 0, 1, 1));
-// const diamondNormals = getDiamond([0, -1, -3], 0.8).normals;
 
 // scenario arrays
 const scenario = [
@@ -71,7 +52,8 @@ const scenario = [
     ...pyramids.second.vertices,
     ...pyramids.third.vertices,
     ...buildings.vertices,
-    ...sun.vertices
+    ...sun.vertices,
+    ...oasis.vertices
 ];
 
 const scenarioColors = [
@@ -80,7 +62,8 @@ const scenarioColors = [
     ...pyramids.second.colors,
     ...pyramids.third.colors,
     ...buildings.colors,
-    ...sun.colors
+    ...sun.colors,
+    ...oasis.colors
 ];
 
 const normals = [
@@ -89,5 +72,6 @@ const normals = [
     ...pyramids.second.normals,
     ...pyramids.third.normals,
     ...buildings.normals,
-    ...sun.normals
+    ...sun.normals,
+    ...oasis.normals
 ]

@@ -31,20 +31,28 @@ function scaleVector(vec, scale) {
 
 function multiplyMatrixVector(matrix, array) {
 
-  if(matrix[0].length != array.length) {
+  if (matrix[0].length != array.length) {
     console.log("error: matrix length is not equal to length of array");
     return;
   }
-  
+
   var result = [];
 
-  for(var i = 0; i < matrix.length; i++) {
+  for (var i = 0; i < matrix.length; i++) {
     var sum = 0;
-    for(var j = 0; j < array.length; j++) {
+    for (var j = 0; j < array.length; j++) {
       sum += matrix[i][j] * array[j];
     }
     result.push(sum);
   }
 
   return result;
+}
+
+function lerp(start, end, amount) {
+  // Linear interpolation function (assuming start and end are vec3)
+  return addVectors(
+    scaleVector(start, 1 - amount),
+    scaleVector(end, amount)
+  );
 }

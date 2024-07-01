@@ -25,17 +25,17 @@ class Camera {
     }
 
     moveBackward(delta) {
-        this.moveForward(-delta); // Reuse moveForward with negative delta
+        this.moveForward(-delta);
     }
 
     moveRight(delta) {
-        const right = normalize(cross(this.up, subtractVectors(this.at, this.eye)));
-        this.eye = addVectors(this.eye, scaleVector(right, delta));
-        this.at = addVectors(this.at, scaleVector(right, delta));
+        this.moveLeft(-delta);
     }
 
     moveLeft(delta) {
-        this.moveRight(-delta); // Reuse moveRight with negative delta
+        const right = normalize(cross(this.up, subtractVectors(this.at, this.eye)));
+        this.eye = addVectors(this.eye, scaleVector(right, delta));
+        this.at = addVectors(this.at, scaleVector(right, delta));
     }
 
     moveUp(delta) {
@@ -45,7 +45,7 @@ class Camera {
     }
 
     moveDown(delta) {
-        this.moveUp(-delta); // Reuse moveUp with negative delta
+        this.moveUp(-delta);
     }
 
     lookUp(deltaAngle) {
@@ -55,18 +55,18 @@ class Camera {
         const sin = Math.sin(angle);
 
         const rotationMatrix = mat3(
-            vec3(1, 0, 0),
-            vec3(0, cos, sin),
-            vec3(0, -sin, cos)
-        )
+            vec3(1, 0, 0), 
+            vec3(0, cos, -sin), 
+            vec3(0, sin, cos) 
+        );
 
         // Get the current eye direction vector
         const eyeDirection = subtractVectors(this.at, this.eye);
 
-        // // Apply rotation to the eye direction
+        // Apply rotation to the eye direction
         const newEyeDirection = multiplyMatrixVector(rotationMatrix, eyeDirection);
 
-        // // Update the at vector based on the transformed eye direction and eye position
+        // Update the at vector based on the transformed eye direction and eye position
         this.at = addVectors(this.eye, newEyeDirection);
     }
 
@@ -100,7 +100,7 @@ class Camera {
         this.lookRight(-deltaAngle);
     }
 
-    setFOV(value){
+    setFOV(value) {
         this.fovY = value;
     }
 

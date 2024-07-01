@@ -308,3 +308,36 @@ const getSun = () => {
         normals: sunNormals
     }
 }
+
+const getOasis = () => {
+    const waterHeight = groundHeight + 0.05;
+    
+    const waterA = vec4(1.5, waterHeight, -1.3, 1.0);
+    const waterB = vec4(2.1, waterHeight, -1.9, 1.0);
+    const waterC = vec4(2.1, waterHeight, -1.3, 1.0);
+    const waterD = vec4(1.5, waterHeight, -1.9, 1.0);
+
+    const waterVertices = [
+        waterA, waterB, waterC,
+        waterA, waterB, waterD
+    ]
+
+    const waterColors = waterVertices.map(() => vec4(0, 0, 1, 1));
+    const waterNormals = waterVertices.map(() => vec3(0, 1, 0));
+
+    const oasisVertices = [
+        ...waterVertices,
+    ]
+    const oasisNormals = [
+        ...waterNormals
+    ]
+    const oasisColors = [
+        ...waterColors
+    ]
+
+    return {
+        vertices: oasisVertices,
+        normals: oasisNormals,
+        colors: oasisColors
+    }
+}

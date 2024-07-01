@@ -16,9 +16,15 @@ var ambientLight, diffuseLight, specularLight;
 var kaLoc, kdLoc, ksLoc;
 
 var camera;
+var speed = 0.1;
 var camX = 0, camY = 0, camZ = 0;
+let isMouseDown = false;
+let lastX = 0;
+let lastY = 0;
+
 var aspect;
 var lights;
+
 var lastValueX = 50, lastValueY = 50, lastValueZ = 50;
 var lastRValueX = 50, lastRValueY = 50;
 
@@ -86,60 +92,100 @@ window.onload = function init() {
     changeCamTheta.addEventListener("input", function (event) {
         const { value } = event.target;
 
-        if (value > lastRValueX)
+        if (value > lastRValueY)
             camera.lookUp(value / 10);
         else
             camera.lookDown(value / 10);
 
-        lastRValueX = value;
+        lastRValueY = value;
     })
 
     const changeCamPhi = document.getElementById("cam-phi")
     changeCamPhi.addEventListener("input", function (event) {
         const { value } = event.target;
 
-        if (value > lastRValueY)
+        if (value > lastRValueX)
             camera.lookRight(value / 10);
         else
             camera.lookLeft(value / 10);
 
-        lastRValueY = value;
+        lastRValueX = value;
     })
+
+    document.addEventListener('keydown', (event) => {
+        const key = event.key.toLowerCase(); // Normalize key to lowercase
+
+        switch (key) {
+            case "w":
+                camera.moveForward(speed);
+                break;
+            case "a":
+                camera.moveLeft(speed);
+                break;
+            case "s":
+                camera.moveBackward(speed);
+                break;
+            case "d":
+                camera.moveRight(speed);
+                break;
+            default:
+                break;
+        }
+
+        // Request animation frame for smooth update
+        requestAnimationFrame(render);
+    })
+
+    canvas.addEventListener("mousedown", function (event) {
+        isMouseDown = true;
+        lastX = event.clientX;
+        lastY = event.clientY;
+    });
+
+    canvas.addEventListener("mouseup", function (event) {
+        isMouseDown = false;
+    });
+
+    canvas.addEventListener("mousemove", function (event) {
+        if (isMouseDown) {
+            const deltaX = event.clientX - lastX;
+            const deltaY = event.clientY - lastY;
+
+            lastX = event.clientX;
+            lastY = event.clientY;
+
+            // Adjust sensitivity as needed
+            const sensitivity = 0.1;
+
+            camera.lookRight(deltaX * sensitivity);
+            camera.lookUp(deltaY * sensitivity);
+
+            // Request animation frame for smooth update
+            requestAnimationFrame(render);
+        }
+    });
 
     const changeCamX = document.getElementById("cam-x")
     changeCamX.addEventListener("input", function (event) {
         const { value } = event.target;
 
-        if (value > lastValueX)
-            camera.moveForward(value / 100);
-        else
-            camera.moveBackward(value / 100);
+        lights.lightPositionControl(value / 20, lightPositionType.x);
 
-        lastValueX = value;
     })
 
     const changeCamY = document.getElementById("cam-y")
     changeCamY.addEventListener("input", function (event) {
         const { value } = event.target;
 
-        if (value > lastValueY)
-            camera.moveUp(value / 100);
-        else
-            camera.moveDown(value / 100);
+        lights.lightPositionControl(value / 20, lightPositionType.y)
 
-        lastValueY = value;
     })
 
     const changeCamZ = document.getElementById("cam-z")
     changeCamZ.addEventListener("input", function (event) {
         const { value } = event.target;
 
-        if (value > lastValueZ)
-            camera.moveLeft(value / 100);
-        else
-            camera.moveRight(value / 100);
-
-        lastValueZ = value;
+        lights.lightPositionControl(value / 20, lightPositionType.z)
     })
 
     const changeCamFOV = document.getElementById("cam-fov")
@@ -173,13 +219,13 @@ window.onload = function init() {
         lights.lightIntensity(value / 100, lightType.AMBIENT)
     })
 
-    const controlDiffuseLight = document.getElementById("aLightCoefficient")
+    const controlDiffuseLight = document.getElementById("dLightCoefficient")
     controlDiffuseLight.addEventListener("change", (event) => {
         const { value } = event.target;
         lights.lightIntensity(value / 100, lightType.DIFFUSE)
     })
 
-    const controlSpecularLight = document.getElementById("aLightCoefficient")
+    const controlSpecularLight = document.getElementById("sLightCoefficient")
     controlSpecularLight.addEventListener("change", (event) => {
         const { value } = event.target;
         lights.lightIntensity(value / 100, lightType.SPECULAR)

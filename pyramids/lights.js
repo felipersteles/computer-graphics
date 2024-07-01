@@ -2,7 +2,7 @@ class Lights {
     constructor() {
         this.ambientLight = vec4(0.7, 0.7, 0.7, 1);
         this.lightColor = vec4(1, 1, 1, 1);
-        this.lightPosition = vec3(3, 2.5, 0);
+        this.lightPosition = vec3(0, 0, 0);
 
         this.aLight = true;
         this.dLight = true;
@@ -40,6 +40,26 @@ class Lights {
                 break;
         }
     }
+
+    lightPositionControl(value, type){
+        switch(type){
+            case lightPositionType.x:
+                this.lightPosition[0] = value;
+                break;
+            case lightPositionType.y:
+                this.lightPosition[1] = value;
+                break;
+            default:
+                this.lightPosition[2] = value;
+                break;
+        }
+    }
+}
+
+const lightPositionType = {
+    x: "x",
+    y: "y",
+    z: "z",
 }
 
 const lightType = {
