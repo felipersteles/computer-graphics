@@ -138,14 +138,18 @@ var selectedAction = actions.DRAW;
 // Receives event.clientX and event.clientY (pixels) and converts to canvas position.
 function convertXY(x, y) {
 
-    // try it
-    // var boundingBox = canvas.getBoundingClientRect();
+    // Get the bounding rectangle of the canvas element
+    const rect = canvas.getBoundingClientRect();
 
-    // const x = (x - boundingBox.left) * (cw / boundingBox.width);
-    // const y = (y - boundingBox.top) * (ch / boundingBox.height);
-    // return vec2(x, y);
+    // Calculate the offset of the canvas relative to the viewport
+    const canvasXOffset = rect.left;
+    const canvasYOffset = rect.top;
 
-    return vec2(2 * x / canvas.width - 1, 2 * (canvas.height - y) / canvas.height - 1);
+    // Calculate the coordinates relative to the canvas element
+    const canvasX = x - canvasXOffset;
+    const canvasY = y - canvasYOffset;
+
+    return vec2(2 * canvasX / canvas.width - 1, 2 * (canvas.height - canvasY) / canvas.height - 1);
 }
 
 // Main function
@@ -1143,7 +1147,6 @@ function unHighlightTriangle() {
     isSelected = false;
 }
 
-
 // ----------------------------------------------------------------
 //           Square Utils
 // ----------------------------------------------------------------
@@ -1179,7 +1182,6 @@ function updateSquareEdges(selObj, a, b, c, d) {
         [b, d]
     ];
 }
-
 
 // using the picked method learned on the graphic computer classe
 // of prof. dr. Darlan url(???)
