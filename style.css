@@ -280,6 +280,62 @@ footer {
     margin: 0;
 }
 
+/* Constellation selector */
+#constellation-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin: 12px 0;
+}
+
+.constellation-btn {
+    background: transparent;
+    border: 1px solid rgba(180, 200, 255, 0.5);
+    color: #c8d8ff;
+    padding: 5px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85em;
+    transition: all 0.2s;
+}
+
+.constellation-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #fff;
+    color: #fff;
+}
+
+.constellation-btn.active {
+    background: rgba(180, 200, 255, 0.2);
+    border-color: #c8d8ff;
+    color: #fff;
+}
+
+/* Dark space theme for star section */
+section#stars {
+    background-color: #05060f;
+    color: #e0e0e0;
+}
+
+section#stars h1,
+section#stars h2,
+section#stars label {
+    color: #c8d8ff;
+}
+
+section#stars input {
+    background: #0d0f1e;
+    color: #eee;
+    border: 1px solid #444;
+    padding: 4px 8px;
+}
+
+section#stars #description {
+    color: #aac0ff;
+    font-style: italic;
+}
+
 .pyramid{
     display: flex;
     align-items: center;
@@ -296,22 +352,58 @@ footer {
     gap: 3px;
 }
 
+/* Responsive images */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
 /* Responsiveness for smaller screens */
 
 @media (max-width: 768px) {
     .container {
         flex-direction: column;
-        /* Stacks elements vertically on small screens*/
         align-items: flex-start;
-        /* Aligns logo and nav to the left */
     }
 
     nav {
         margin-top: 10px;
-        /* Adds space between logo and nav on small screens */
+        width: 100%;
+    }
+
+    nav ul {
+        display: flex;
+        flex-direction: column;
+        padding: 0;
+        margin: 0;
+    }
+
+    nav li {
+        display: block;
+        margin: 4px 0;
     }
 
     .concept {
         width: 100%;
+    }
+
+    .home {
+        padding: 30px 20px;
+    }
+
+    .more-applications {
+        padding: 20px 15px;
+    }
+
+    .flex {
+        flex-direction: column;
+    }
+
+    .flex.padding {
+        flex-direction: column;
+    }
+
+    .links {
+        padding: 0 15px 20px;
     }
 }
